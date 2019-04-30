@@ -227,6 +227,31 @@ class JsonMusic {
     var site: String = ""
 }
 
+class JsonYears {
+    var date: String = ""
+    var showCount: String = ""
+}
+
+class JsonShows {
+    var id: String = ""
+    var date: String = ""
+    var duration: String = ""
+    var incomplete: String = ""
+    var tourId: String = ""
+    var venue: String = ""
+    var tracks: JsonTracks = JsonTracks()
+
+}
+
+class JsonTracks {
+    var id: String = ""
+    var songTitle: String = ""
+    var position: String = ""
+    var duration: Long = -1
+    var set: String = ""
+    var source: String = ""
+}
+
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
 
 private val glideOptions = RequestOptions()
