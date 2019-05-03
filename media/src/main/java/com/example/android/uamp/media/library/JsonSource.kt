@@ -163,7 +163,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     id = jsonMusic.id
     title = jsonMusic.title
     artist = jsonMusic.artist
-    album = jsonMusic.album
+    album = jsonMusic.set_name
     duration = durationMs
     genre = jsonMusic.genre
     mediaUri = jsonMusic.mp3
@@ -175,7 +175,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     // To make things easier for *displaying* these, set the display properties as well.
     displayTitle = jsonMusic.title
     displaySubtitle = jsonMusic.artist
-    displayDescription = jsonMusic.album
+    displayDescription = jsonMusic.set_name
     displayIconUri = jsonMusic.image
 
     // Add downloadStatus to force the creation of an "extras" bundle in the resulting
@@ -228,7 +228,7 @@ class JsonCatalog {
 class JsonMusic {
     var id: String = ""
     var title: String = ""
-    var album: String = ""
+    var set_name: String = ""
     var artist: String = ""
     var genre: String = ""
     var mp3: String = ""
@@ -253,7 +253,7 @@ class JsonPhishShow {
     var date: String = ""
     var duration: String = ""
     var sbd: String = ""
-    var tourId: String = ""
+    var tour_id: String = ""
     var tracks: List<JsonPhishTracks> = emptyList()
 }
 
@@ -261,6 +261,7 @@ class JsonPhishTracks {
     var id: String = ""
     var title: String = ""
     var position: String = ""
+    var show_date: String = ""
     var duration: Long = -1
     var set_name: String = ""
     var mp3: String = ""
