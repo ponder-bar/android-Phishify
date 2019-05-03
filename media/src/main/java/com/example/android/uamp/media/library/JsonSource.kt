@@ -91,27 +91,27 @@ private class UpdateCatalogTask(val glide: RequestManager,
             // Get the base URI to fix up relative references later.
             val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment)
 
-            mediaItems += musicCat.music.map { song ->
+            mediaItems += musicCat.tracks.map { song ->
                 // The JSON may have paths that are relative to the source of the JSON
                 // itself. We need to fix them up here to turn them into absolute paths.
-                if (!song.source.startsWith(catalogUri.scheme)) {
-                    song.source = baseUri + song.source
+                if (!song.mp3.startsWith(catalogUri.scheme)) {
+                    song.mp3 = baseUri + song.mp3
                 }
                 if (!song.image.startsWith(catalogUri.scheme)) {
                     song.image = baseUri + song.image
                 }
 
                 // Block on downloading artwork.
-                val art = glide.applyDefaultRequestOptions(glideOptions)
-                        .asBitmap()
-                        .load(song.image)
-                        .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                        .get()
+                /* val art = glide.applyDefaultRequestOptions(glideOptions)
+                         .asBitmap()
+                         .load(song.image)
+                         .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
+                         .get()*/
 
                 MediaMetadataCompat.Builder()
                         .from(song)
                         .apply {
-                            albumArt = art
+                            albumArt = null
                         }
                         .build()
             }.toList()
@@ -142,8 +142,10 @@ private class UpdateCatalogTask(val glide: RequestManager,
                 val r = get(catalogUri.toString(), headers = auth)
                 Log.i("JSON OBJ", r.jsonObject.toString())
                 var show = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
-                Log.i("SHOW OBJ", show.toString())
-                Gson().fromJson<JsonCatalog>(r.jsonObject.toString(), JsonCatalog::class.java)
+                var test = show.data
+                var test2 = Gson().toJson(test)
+                Log.i("Tracks OBJ", test2.toString())
+                Gson().fromJson<JsonCatalog>(test2.toString(), JsonCatalog::class.java)
             } catch (ioEx: IOException) {
                 JsonCatalog()
             }
@@ -164,7 +166,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     album = jsonMusic.album
     duration = durationMs
     genre = jsonMusic.genre
-    mediaUri = jsonMusic.source
+    mediaUri = jsonMusic.mp3
     albumArtUri = jsonMusic.image
     trackNumber = jsonMusic.trackNumber
     trackCount = jsonMusic.totalTrackCount
@@ -189,7 +191,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
  * Wrapper object for our JSON in order to be processed easily by GSON.
  */
 class JsonCatalog {
-    var music: List<JsonMusic> = ArrayList()
+    var tracks: List<JsonMusic> = ArrayList()
 }
 
 /**
@@ -229,7 +231,7 @@ class JsonMusic {
     var album: String = ""
     var artist: String = ""
     var genre: String = ""
-    var source: String = ""
+    var mp3: String = ""
     var image: String = ""
     var trackNumber: Long = 0
     var totalTrackCount: Long = 0
@@ -261,7 +263,7 @@ class JsonPhishTracks {
     var position: String = ""
     var duration: Long = -1
     var set_name: String = ""
-    var source: String = ""
+    var mp3: String = ""
 }
 
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
