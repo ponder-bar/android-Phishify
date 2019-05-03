@@ -49,6 +49,8 @@ dependencies {
 
     api "com.google.code.gson:gson:$gson_version"
 
+    api "io.karn:khttp-android:$khttp_version"
+
     // ExoPlayer dependencies
 
     // This allows UAMP to utilize a local version of ExoPlayer, which is particularly

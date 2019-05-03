@@ -22,6 +22,7 @@ import android.os.AsyncTask
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat.STATUS_NOT_DOWNLOADED
 import android.support.v4.media.MediaMetadataCompat
+import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -45,6 +46,7 @@ import com.example.android.uamp.media.extensions.title
 import com.example.android.uamp.media.extensions.trackCount
 import com.example.android.uamp.media.extensions.trackNumber
 import com.google.gson.Gson
+import khttp.get
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -130,13 +132,21 @@ private class UpdateCatalogTask(val glide: RequestManager,
      * @return The catalog downloaded, or an empty catalog if an error occurred.
      */
     private fun tryDownloadJson(catalogUri: Uri) =
-        try {
-            val catalogConn = URL(catalogUri.toString())
-            val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
-            Gson().fromJson<JsonCatalog>(reader, JsonCatalog::class.java)
-        } catch (ioEx: IOException) {
-            JsonCatalog()
-        }
+            try {
+                //val catalogConn = URL(catalogUri.toString())
+                //val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
+                val auth = mapOf("Authorization" to
+                        "Bearer " +
+                        "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
+                        "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
+                val r = get(catalogUri.toString(), headers = auth)
+                Log.i("JSON OBJ", r.jsonObject.toString())
+                var show = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
+                Log.i("SHOW OBJ", show.toString())
+                Gson().fromJson<JsonCatalog>(r.jsonObject.toString(), JsonCatalog::class.java)
+            } catch (ioEx: IOException) {
+                JsonCatalog()
+            }
 }
 
 /**
@@ -227,28 +237,30 @@ class JsonMusic {
     var site: String = ""
 }
 
-class JsonYears {
+class JsonPhishYears {
     var date: String = ""
     var showCount: String = ""
 }
 
-class JsonShows {
+class JsonPhishShowWrap {
+    var data: JsonPhishShow = JsonPhishShow()
+}
+
+class JsonPhishShow {
     var id: String = ""
     var date: String = ""
     var duration: String = ""
-    var incomplete: String = ""
+    var sbd: String = ""
     var tourId: String = ""
-    var venue: String = ""
-    var tracks: JsonTracks = JsonTracks()
-
+    var tracks: List<JsonPhishTracks> = emptyList()
 }
 
-class JsonTracks {
+class JsonPhishTracks {
     var id: String = ""
-    var songTitle: String = ""
+    var title: String = ""
     var position: String = ""
     var duration: Long = -1
-    var set: String = ""
+    var set_name: String = ""
     var source: String = ""
 }
 
