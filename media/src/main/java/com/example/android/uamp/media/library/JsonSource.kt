@@ -168,7 +168,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     genre = jsonMusic.genre
     mediaUri = jsonMusic.mp3
     albumArtUri = jsonMusic.image
-    trackNumber = jsonMusic.trackNumber
+    trackNumber = jsonMusic.position
     trackCount = jsonMusic.totalTrackCount
     flag = MediaItem.FLAG_PLAYABLE
 
@@ -229,11 +229,11 @@ class JsonMusic {
     var id: String = ""
     var title: String = ""
     var set_name: String = ""
-    var artist: String = ""
+    var artist: String = "Phish"
     var genre: String = ""
     var mp3: String = ""
     var image: String = ""
-    var trackNumber: Long = 0
+    var position: Long = 0
     var totalTrackCount: Long = 0
     var duration: Long = -1
     var site: String = ""
