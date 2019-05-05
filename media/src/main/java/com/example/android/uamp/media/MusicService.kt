@@ -85,7 +85,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
     private var isForegroundService = false
 
     private val remoteJsonSource: Uri =
-            Uri.parse("https://phish.in/api/v1/shows/975")
+            Uri.parse("https://phish.in/api/v1/years/1997")
 
     private val uAmpAudioAttributes = AudioAttributes.Builder()
             .setContentType(C.CONTENT_TYPE_MUSIC)

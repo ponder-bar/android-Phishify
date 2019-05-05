@@ -46,7 +46,11 @@ import com.example.android.uamp.media.extensions.title
 import com.example.android.uamp.media.extensions.trackCount
 import com.example.android.uamp.media.extensions.trackNumber
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import khttp.get
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -140,12 +144,14 @@ private class UpdateCatalogTask(val glide: RequestManager,
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
                 val r = get(catalogUri.toString(), headers = auth)
-                Log.i("JSON OBJ", r.jsonObject.toString())
-                var show = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
-                var test = show.data
-                var test2 = Gson().toJson(test)
-                Log.i("Tracks OBJ", test2.toString())
-                Gson().fromJson<JsonCatalog>(test2.toString(), JsonCatalog::class.java)
+                var shows = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
+                var showData = shows.data
+                var flatYear: List<JsonPhishTracks> = showData.flatMap { it.tracks }
+                val rootObj = JSONObject()
+                var yearJson  = Gson().toJson(flatYear)
+                val tracksObj = JSONArray(yearJson)
+                rootObj.put("tracks", tracksObj)
+                Gson().fromJson<JsonCatalog>(rootObj.toString(), JsonCatalog::class.java)
             } catch (ioEx: IOException) {
                 JsonCatalog()
             }
@@ -245,7 +251,7 @@ class JsonPhishYears {
 }
 
 class JsonPhishShowWrap {
-    var data: JsonPhishShow = JsonPhishShow()
+    var data: List<JsonPhishShow> = emptyList()
 }
 
 class JsonPhishShow {
@@ -254,6 +260,7 @@ class JsonPhishShow {
     var duration: String = ""
     var sbd: String = ""
     var tour_id: String = ""
+    var venue_name: String = ""
     var tracks: List<JsonPhishTracks> = emptyList()
 }
 
@@ -265,6 +272,12 @@ class JsonPhishTracks {
     var duration: Long = -1
     var set_name: String = ""
     var mp3: String = ""
+}
+
+class JsonPhishVenue {
+    var id: String = ""
+    var name: String = ""
+    var location: String = ""
 }
 
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
