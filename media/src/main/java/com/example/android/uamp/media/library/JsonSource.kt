@@ -146,11 +146,20 @@ private class UpdateCatalogTask(val glide: RequestManager,
                 val r = get(catalogUri.toString(), headers = auth)
                 var shows = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
                 var showData = shows.data
+
+                for (sh in showData) {
+                    for (test in sh.tracks) {
+                        test.venue_name = sh.venue_name
+                    }
+                }
+
                 var flatYear: List<JsonPhishTracks> = showData.flatMap { it.tracks }
                 val rootObj = JSONObject()
-                var yearJson  = Gson().toJson(flatYear)
+                var yearJson = Gson().toJson(flatYear)
                 val tracksObj = JSONArray(yearJson)
                 rootObj.put("tracks", tracksObj)
+
+
                 Gson().fromJson<JsonCatalog>(rootObj.toString(), JsonCatalog::class.java)
             } catch (ioEx: IOException) {
                 JsonCatalog()
@@ -168,8 +177,8 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
 
     id = jsonMusic.id
     title = jsonMusic.title
-    artist = jsonMusic.artist
-    album = jsonMusic.set_name
+    artist = jsonMusic.show_date
+    album = jsonMusic.venue_name
     duration = durationMs
     genre = jsonMusic.genre
     mediaUri = jsonMusic.mp3
@@ -180,8 +189,8 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
 
     // To make things easier for *displaying* these, set the display properties as well.
     displayTitle = jsonMusic.title
-    displaySubtitle = jsonMusic.artist
-    displayDescription = jsonMusic.set_name
+    displaySubtitle = jsonMusic.set_name
+    displayDescription = jsonMusic.show_date
     displayIconUri = jsonMusic.image
 
     // Add downloadStatus to force the creation of an "extras" bundle in the resulting
@@ -235,6 +244,8 @@ class JsonMusic {
     var id: String = ""
     var title: String = ""
     var set_name: String = ""
+    var show_date: String = ""
+    var venue_name: String = ""
     var artist: String = "Phish"
     var genre: String = ""
     var mp3: String = ""
@@ -268,6 +279,7 @@ class JsonPhishTracks {
     var id: String = ""
     var title: String = ""
     var position: String = ""
+    var venue_name: String = ""
     var show_date: String = ""
     var duration: Long = -1
     var set_name: String = ""
