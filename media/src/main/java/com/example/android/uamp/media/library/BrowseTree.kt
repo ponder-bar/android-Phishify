@@ -86,8 +86,8 @@ class BrowseTree(musicSource: MusicSource) {
             id = mediaItem.album.urlEncoded
             title = mediaItem.album
             artist = mediaItem.artist
-            albumArt = mediaItem.albumArt
-            albumArtUri = mediaItem.albumArtUri?.toString()
+            //albumArt = mediaItem.albumArt
+            //albumArtUri = mediaItem.albumArtUri?.toString()
             flag = MediaItem.FLAG_BROWSABLE
         }.build()
 

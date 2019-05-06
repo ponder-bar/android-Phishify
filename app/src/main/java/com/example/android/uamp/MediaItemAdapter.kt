@@ -70,9 +70,9 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
             holder.subtitleView.text = mediaItem.subtitle
             holder.playbackState.setImageResource(mediaItem.playbackRes)
 
-            Glide.with(holder.albumArt)
+           /* Glide.with(holder.albumArt)
                     .load(mediaItem.albumArtUri)
-                    .into(holder.albumArt)
+                    .into(holder.albumArt)*/
         }
     }
 

@@ -22,39 +22,17 @@ import android.os.AsyncTask
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat.STATUS_NOT_DOWNLOADED
 import android.support.v4.media.MediaMetadataCompat
-import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.android.uamp.media.R
-import com.example.android.uamp.media.extensions.album
-import com.example.android.uamp.media.extensions.albumArt
-import com.example.android.uamp.media.extensions.albumArtUri
-import com.example.android.uamp.media.extensions.artist
-import com.example.android.uamp.media.extensions.displayDescription
-import com.example.android.uamp.media.extensions.displayIconUri
-import com.example.android.uamp.media.extensions.displaySubtitle
-import com.example.android.uamp.media.extensions.displayTitle
-import com.example.android.uamp.media.extensions.downloadStatus
-import com.example.android.uamp.media.extensions.duration
-import com.example.android.uamp.media.extensions.flag
-import com.example.android.uamp.media.extensions.genre
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.mediaUri
-import com.example.android.uamp.media.extensions.title
-import com.example.android.uamp.media.extensions.trackCount
-import com.example.android.uamp.media.extensions.trackNumber
+import com.example.android.uamp.media.extensions.*
 import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import khttp.get
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.URL
 import java.util.concurrent.TimeUnit
 
 /**
@@ -143,8 +121,9 @@ private class UpdateCatalogTask(val glide: RequestManager,
                         "Bearer " +
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
-                val r = get(catalogUri.toString(), headers = auth)
-                var shows = Gson().fromJson<JsonPhishShowWrap>(r.jsonObject.toString(), JsonPhishShowWrap::class.java)
+                val years = get(catalogUri.toString(), headers = auth)
+                val theYear = get("$catalogUri/1994", headers = auth)
+                var shows = Gson().fromJson<JsonPhishShowWrap>(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
                 var showData = shows.data
 
                 for (sh in showData) {
