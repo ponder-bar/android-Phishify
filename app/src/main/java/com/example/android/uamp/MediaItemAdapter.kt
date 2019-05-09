@@ -16,19 +16,15 @@
 
 package com.example.android.uamp
 
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android.uamp.MediaItemData.Companion.PLAYBACK_RES_CHANGED
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.albumbArt
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.item_state
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.subtitle
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.title
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.*
 
 /**
  * [RecyclerView.Adapter] of [MediaItemData]s used by the [MediaItemFragment].

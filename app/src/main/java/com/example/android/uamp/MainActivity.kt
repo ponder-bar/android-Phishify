@@ -18,6 +18,7 @@ package com.example.android.uamp
 
 import android.media.AudioManager
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -62,6 +63,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToMediaItem(mediaId)
             }
         })
+    }
+
+    fun displayYears(view: View){
+
     }
 
     private fun navigateToMediaItem(mediaId: String) {

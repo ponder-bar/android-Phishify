@@ -121,8 +121,11 @@ private class UpdateCatalogTask(val glide: RequestManager,
                         "Bearer " +
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
-                val years = get(catalogUri.toString(), headers = auth)
+                val yearParams = mapOf("include_show_counts" to "true")
+                val years = get(catalogUri.toString(), headers = auth, params = yearParams)
+                var yearData = Gson().fromJson<JsonPhishYearsWrap>(years.jsonObject.toString(), JsonPhishYearsWrap::class.java)
                 val theYear = get("$catalogUri/1994", headers = auth)
+
                 var shows = Gson().fromJson<JsonPhishShowWrap>(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
                 var showData = shows.data
 
@@ -235,9 +238,14 @@ class JsonMusic {
     var site: String = ""
 }
 
+class JsonPhishYearsWrap {
+    var data: List<JsonPhishYears> = emptyList()
+
+}
+
 class JsonPhishYears {
     var date: String = ""
-    var showCount: String = ""
+    var show_count: String = ""
 }
 
 class JsonPhishShowWrap {
