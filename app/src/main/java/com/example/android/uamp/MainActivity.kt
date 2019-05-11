@@ -18,7 +18,6 @@ package com.example.android.uamp
 
 import android.media.AudioManager
 import android.os.Bundle
-import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -34,6 +33,9 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val clickedYear = intent.getStringExtra(CustomViewHolder.YEAR)
+        supportActionBar?.title = clickedYear
+        intent.putExtra(CustomViewHolder.YEAR, clickedYear)
         // Since UAMP is a music player, the volume controls should adjust the music volume while
         // in the app.
         volumeControlStream = AudioManager.STREAM_MUSIC
@@ -63,11 +65,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToMediaItem(mediaId)
             }
         })
-    }
 
-    fun displayYears(view: View){
 
     }
+
 
     private fun navigateToMediaItem(mediaId: String) {
         var fragment: MediaItemFragment? = getBrowseFragment(mediaId)

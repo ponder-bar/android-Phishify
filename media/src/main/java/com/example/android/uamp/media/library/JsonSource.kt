@@ -117,13 +117,11 @@ private class UpdateCatalogTask(val glide: RequestManager,
             try {
                 //val catalogConn = URL(catalogUri.toString())
                 //val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
+
                 val auth = mapOf("Authorization" to
                         "Bearer " +
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
-                val yearParams = mapOf("include_show_counts" to "true")
-                val years = get(catalogUri.toString(), headers = auth, params = yearParams)
-                var yearData = Gson().fromJson<JsonPhishYearsWrap>(years.jsonObject.toString(), JsonPhishYearsWrap::class.java)
                 val theYear = get("$catalogUri/1994", headers = auth)
 
                 var shows = Gson().fromJson<JsonPhishShowWrap>(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
@@ -238,16 +236,6 @@ class JsonMusic {
     var site: String = ""
 }
 
-class JsonPhishYearsWrap {
-    var data: List<JsonPhishYears> = emptyList()
-
-}
-
-class JsonPhishYears {
-    var date: String = ""
-    var show_count: String = ""
-}
-
 class JsonPhishShowWrap {
     var data: List<JsonPhishShow> = emptyList()
 }
@@ -271,12 +259,6 @@ class JsonPhishTracks {
     var duration: Long = -1
     var set_name: String = ""
     var mp3: String = ""
-}
-
-class JsonPhishVenue {
-    var id: String = ""
-    var name: String = ""
-    var location: String = ""
 }
 
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
