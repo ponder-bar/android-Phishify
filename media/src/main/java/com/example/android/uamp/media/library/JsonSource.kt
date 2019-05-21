@@ -161,8 +161,8 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
 
     id = jsonMusic.id
     title = jsonMusic.title
-    artist = jsonMusic.show_date
-    album = jsonMusic.venue_name
+    artist = jsonMusic.venue_name
+    album = jsonMusic.show_date
     duration = durationMs
     genre = jsonMusic.genre
     mediaUri = jsonMusic.mp3
@@ -172,8 +172,8 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     flag = MediaItem.FLAG_PLAYABLE
 
     // To make things easier for *displaying* these, set the display properties as well.
-    displayTitle = jsonMusic.title
-    displaySubtitle = jsonMusic.set_name
+    displayTitle = jsonMusic.set_name
+    displaySubtitle = jsonMusic.title
     displayDescription = jsonMusic.show_date
     displayIconUri = jsonMusic.image
 

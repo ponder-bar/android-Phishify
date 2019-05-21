@@ -62,8 +62,8 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
         // there isn't a stale item.
         if (fullRefresh) {
             holder.item = mediaItem
-            holder.titleView.text = mediaItem.title
-            holder.subtitleView.text = mediaItem.subtitle
+            holder.titleView.text = mediaItem.subtitle
+            holder.subtitleView.text = mediaItem.title
             holder.playbackState.setImageResource(mediaItem.playbackRes)
 
            /* Glide.with(holder.albumArt)
