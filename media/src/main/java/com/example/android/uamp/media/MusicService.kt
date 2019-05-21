@@ -116,11 +116,14 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val clickedYear = intent?.getStringExtra("YEAR_TITLE")
-        var phishJsonSource: String = ""
+        var foreground = intent?.getStringExtra("FORE")
+        var phishJsonSource = ""
         if (clickedYear != null) {
             phishJsonSource = "$remoteJsonSource/$clickedYear"
         }
-        setService(phishSource = phishJsonSource)
+        if(foreground == null){
+            setService(phishSource = phishJsonSource)
+        }
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -304,7 +307,9 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
                      * state itself, even though the name sounds like it."
                      */
                     if (!isForegroundService) {
-                        startService(Intent(applicationContext, this@MusicService.javaClass))
+                        val foregroundIntent = Intent(applicationContext, this@MusicService.javaClass)
+                        foregroundIntent.putExtra("FORE", "FORETEST")
+                        startService(foregroundIntent)
                         startForeground(NOW_PLAYING_NOTIFICATION, notification)
                         isForegroundService = true
                     } else if (notification != null) {
