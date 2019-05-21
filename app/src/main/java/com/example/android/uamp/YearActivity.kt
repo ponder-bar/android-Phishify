@@ -12,14 +12,14 @@ class YearActivity : AppCompatActivity() {
 
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    setContentView(R.layout.fragment_mediaitem_list)
+    setContentView(R.layout.fragment_yearitem_list)
 
     list.layoutManager = LinearLayoutManager(this)
 
     fetchJson()
 }
 
-fun fetchJson() {
+private fun fetchJson() {
     println("Attempting to Fetch JSON")
 
     val url = "https://phish.in/api/v1/years?include_show_counts=true"

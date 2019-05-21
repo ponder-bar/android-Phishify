@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.android.uamp.media.MusicService
 import kotlinx.android.synthetic.main.fragment_mediaitem.view.*
 
 class YearAdapter(val yearFeed: YearFeed) : RecyclerView.Adapter<CustomViewHolder>() {
@@ -42,6 +43,7 @@ class CustomViewHolder(val view: View, var holderYear: PhishYears? = null) : Rec
             val intent = Intent(view.context, MainActivity::class.java)
             intent.putExtra(YEAR, holderYear?.date)
             view.context.startActivity(intent)
+            view.context.startService(Intent(view.context, MusicService::class.java))
         }
     }
 

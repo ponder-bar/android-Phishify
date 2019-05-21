@@ -122,7 +122,7 @@ private class UpdateCatalogTask(val glide: RequestManager,
                         "Bearer " +
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
-                val theYear = get("$catalogUri/1994", headers = auth)
+                val theYear = get("$catalogUri", headers = auth)
 
                 var shows = Gson().fromJson<JsonPhishShowWrap>(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
                 var showData = shows.data

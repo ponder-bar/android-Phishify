@@ -76,8 +76,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     private var isForegroundService = false
 
-    private val remoteJsonSource: Uri =
-            Uri.parse("https://phish.in/api/v1/years")
+    private var remoteJsonSource: String = "https://phish.in/api/v1/years"
 
     private val uAmpAudioAttributes = AudioAttributes.Builder()
             .setContentType(C.CONTENT_TYPE_MUSIC)
@@ -93,7 +92,11 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
+        setService("1997")
 
+    }
+
+    private fun setService(year: String) {
         // Build a PendingIntent that can be used to launch the UI.
         val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)
         val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0)
@@ -129,10 +132,10 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         becomingNoisyReceiver =
                 BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
 
-        mediaSource = JsonSource(context = this, source = remoteJsonSource)
+        mediaSource = JsonSource(context = this, source = Uri.parse("$remoteJsonSource/$year"))
 
-        // ExoPlayer will manage the MediaSession for us.
-        mediaSessionConnector = MediaSessionConnector(mediaSession).also {
+                // ExoPlayer will manage the MediaSession for us.
+                mediaSessionConnector = MediaSessionConnector (mediaSession).also {
             // Produces DataSource instances through which media data is loaded.
             val dataSourceFactory = DefaultDataSourceFactory(
                     this, Util.getUserAgent(this, UAMP_USER_AGENT), null)
@@ -147,8 +150,13 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
             it.setQueueNavigator(UampQueueNavigator(mediaSession))
         }
 
-        packageValidator = PackageValidator(this, R.xml.allowed_media_browser_callers)
+                packageValidator = PackageValidator (this, R.xml.allowed_media_browser_callers)
     }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        return super.onStartCommand(intent, flags, startId)
+    }
+
 
     /**
      * This is the code that causes UAMP to stop playing when swiping it away from recents.
@@ -158,6 +166,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
     override fun onTaskRemoved(rootIntent: Intent) {
         super.onTaskRemoved(rootIntent)
 
+
         /**
          * By stopping playback, the player will transition to [Player.STATE_IDLE]. This will
          * cause a state change in the MediaSession, and (most importantly) call
@@ -166,6 +175,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
          * itself as a foreground service, and will then call [stopSelf].
          */
         exoPlayer.stop(true)
+
     }
 
     override fun onDestroy() {
@@ -200,14 +210,10 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         }
     }
 
-    /**
-     * Returns (via the [result] parameter) a list of [MediaItem]s that are child
-     * items of the provided [parentMediaId]. See [BrowseTree] for more details on
-     * how this is build/more details about the relationships.
-     */
+
     override fun onLoadChildren(
             parentMediaId: String,
-            result: androidx.media.MediaBrowserServiceCompat.Result<List<MediaItem>>) {
+            result: Result<List<MediaItem>>) {
 
         // If the media source is ready, the results will be set synchronously here.
         val resultsSent = mediaSource.whenReady { successfullyInitialized ->

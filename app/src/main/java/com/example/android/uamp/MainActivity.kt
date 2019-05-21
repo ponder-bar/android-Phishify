@@ -26,6 +26,7 @@ import com.example.android.uamp.utils.Event
 import com.example.android.uamp.utils.InjectorUtils
 import com.example.android.uamp.viewmodels.MainActivityViewModel
 
+
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainActivityViewModel
 
@@ -67,8 +68,13 @@ class MainActivity : AppCompatActivity() {
         })
 
 
+
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        //startService(Intent(this, MusicService::class.java))
+    }
 
     private fun navigateToMediaItem(mediaId: String) {
         var fragment: MediaItemFragment? = getBrowseFragment(mediaId)
