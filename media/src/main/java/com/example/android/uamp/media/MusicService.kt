@@ -70,9 +70,8 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
      * See [MusicService.onLoadChildren] to see where it's accessed (and first
      * constructed).
      */
-    private val browseTree: BrowseTree by lazy {
-        BrowseTree(mediaSource)
-    }
+    lateinit var browseTree: BrowseTree
+
 
     private var isForegroundService = false
 
@@ -146,11 +145,11 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession).also {
             // Produces DataSource instances through which media data is loaded.
-            val dataSourceFactory = DefaultDataSourceFactory(
+            var dataSourceFactory = DefaultDataSourceFactory(
                     this, Util.getUserAgent(this, UAMP_USER_AGENT), null)
 
             // Create the PlaybackPreparer of the media session connector.
-            val playbackPreparer = UampPlaybackPreparer(
+            var playbackPreparer = UampPlaybackPreparer(
                     mediaSource,
                     exoPlayer,
                     dataSourceFactory)
@@ -223,6 +222,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         // If the media source is ready, the results will be set synchronously here.
         val resultsSent = mediaSource.whenReady { successfullyInitialized ->
             if (successfullyInitialized) {
+                browseTree = BrowseTree(musicSource = mediaSource)
                 val children = browseTree[parentMediaId]?.map { item ->
                     MediaItem(item.description, item.flag)
                 }
