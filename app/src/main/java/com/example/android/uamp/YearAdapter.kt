@@ -34,7 +34,7 @@ class YearAdapter(val yearFeed: YearFeed) : RecyclerView.Adapter<CustomViewHolde
 class CustomViewHolder(val view: View, var holderYear: PhishYears? = null) : RecyclerView.ViewHolder(view) {
 
     companion object {
-        val YEAR = "YEAR_TITLE"
+        const val YEAR = "YEAR_TITLE"
 
     }
 
@@ -43,7 +43,9 @@ class CustomViewHolder(val view: View, var holderYear: PhishYears? = null) : Rec
             val intent = Intent(view.context, MainActivity::class.java)
             intent.putExtra(YEAR, holderYear?.date)
             view.context.startActivity(intent)
-            view.context.startService(Intent(view.context, MusicService::class.java))
+            val serviceIntent = Intent(view.context, MusicService::class.java)
+            serviceIntent.putExtra(YEAR, holderYear?.date)
+            view.context.startService(serviceIntent)
         }
     }
 

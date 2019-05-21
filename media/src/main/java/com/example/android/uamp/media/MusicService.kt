@@ -76,7 +76,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     private var isForegroundService = false
 
-    private var remoteJsonSource: String = "https://phish.in/api/v1/years"
+    private val remoteJsonSource: String = "https://phish.in/api/v1/years"
 
     private val uAmpAudioAttributes = AudioAttributes.Builder()
             .setContentType(C.CONTENT_TYPE_MUSIC)
@@ -92,12 +92,6 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
-        setService("1997")
-
-    }
-
-    private fun setService(year: String) {
-        // Build a PendingIntent that can be used to launch the UI.
         val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)
         val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0)
 
@@ -119,6 +113,21 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
          * [MediaBrowserCompat.ConnectionCallback.onConnectionFailed].)
          */
         sessionToken = mediaSession.sessionToken
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val clickedYear = intent?.getStringExtra("YEAR_TITLE")
+        var phishJsonSource: String = ""
+        if (clickedYear != null) {
+            phishJsonSource = "$remoteJsonSource/$clickedYear"
+        }
+        setService(phishSource = phishJsonSource)
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    private fun setService(phishSource: String) {
+        // Build a PendingIntent that can be used to launch the UI.
+
 
         // Because ExoPlayer will manage the MediaSession, add the service as a callback for
         // state changes.
@@ -132,10 +141,10 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         becomingNoisyReceiver =
                 BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
 
-        mediaSource = JsonSource(context = this, source = Uri.parse("$remoteJsonSource/$year"))
+        mediaSource = JsonSource(context = this, source = Uri.parse(phishSource))
 
-                // ExoPlayer will manage the MediaSession for us.
-                mediaSessionConnector = MediaSessionConnector (mediaSession).also {
+        // ExoPlayer will manage the MediaSession for us.
+        mediaSessionConnector = MediaSessionConnector(mediaSession).also {
             // Produces DataSource instances through which media data is loaded.
             val dataSourceFactory = DefaultDataSourceFactory(
                     this, Util.getUserAgent(this, UAMP_USER_AGENT), null)
@@ -150,11 +159,7 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
             it.setQueueNavigator(UampQueueNavigator(mediaSession))
         }
 
-                packageValidator = PackageValidator (this, R.xml.allowed_media_browser_callers)
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        return super.onStartCommand(intent, flags, startId)
+        packageValidator = PackageValidator(this, R.xml.allowed_media_browser_callers)
     }
 
 
