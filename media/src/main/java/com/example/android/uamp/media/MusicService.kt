@@ -148,11 +148,11 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession).also {
             // Produces DataSource instances through which media data is loaded.
-            var dataSourceFactory = DefaultDataSourceFactory(
+            val dataSourceFactory = DefaultDataSourceFactory(
                     this, Util.getUserAgent(this, UAMP_USER_AGENT), null)
 
             // Create the PlaybackPreparer of the media session connector.
-            var playbackPreparer = UampPlaybackPreparer(
+            val playbackPreparer = UampPlaybackPreparer(
                     mediaSource,
                     exoPlayer,
                     dataSourceFactory)

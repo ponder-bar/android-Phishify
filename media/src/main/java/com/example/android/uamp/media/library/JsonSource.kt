@@ -29,6 +29,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.android.uamp.media.R
 import com.example.android.uamp.media.extensions.*
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import khttp.get
 import org.json.JSONArray
 import org.json.JSONObject
@@ -117,14 +118,16 @@ private class UpdateCatalogTask(val glide: RequestManager,
             try {
                 //val catalogConn = URL(catalogUri.toString())
                 //val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
-
+                val start = System.currentTimeMillis()
                 val auth = mapOf("Authorization" to
                         "Bearer " +
                         "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
                         "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
                 val theYear = get("$catalogUri", headers = auth)
 
-                var shows = Gson().fromJson<JsonPhishShowWrap>(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
+                val gson = GsonBuilder().create()
+                val shows = gson.fromJson(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
+
                 var showData = shows.data
 
                 for (sh in showData) {
@@ -139,7 +142,8 @@ private class UpdateCatalogTask(val glide: RequestManager,
                 val tracksObj = JSONArray(yearJson)
                 rootObj.put("tracks", tracksObj)
 
-
+                val end = System.currentTimeMillis()
+                println("TIME: ${end - start} ms")
                 Gson().fromJson<JsonCatalog>(rootObj.toString(), JsonCatalog::class.java)
             } catch (ioEx: IOException) {
                 JsonCatalog()
