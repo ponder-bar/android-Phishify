@@ -91,9 +91,11 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
 
     override fun onCreate() {
         super.onCreate()
-        val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)
-        val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, 0)
 
+        // Build a PendingIntent that can be used to launch the UI.
+        val sessionIntent = packageManager?.getLaunchIntentForPackage(packageName)
+        val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
+        sessionIntent?.flags = Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY
 
         // Create a new MediaSession.
         mediaSession = MediaSessionCompat(this, "MusicService")
@@ -112,6 +114,16 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
          * [MediaBrowserCompat.ConnectionCallback.onConnectionFailed].)
          */
         sessionToken = mediaSession.sessionToken
+
+        // Because ExoPlayer will manage the MediaSession, add the service as a callback for
+        // state changes.
+        mediaController = MediaControllerCompat(this, mediaSession).also {
+            it.registerCallback(MediaControllerCallback())
+        }
+        notificationBuilder = NotificationBuilder(this)
+        notificationManager = NotificationManagerCompat.from(this)
+        becomingNoisyReceiver =
+                BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -121,27 +133,14 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
         if (clickedYear != null) {
             phishJsonSource = "$remoteJsonSource/$clickedYear"
         }
-        if(foreground == null){
+        if (foreground == null) {
             setService(phishSource = phishJsonSource)
         }
         return super.onStartCommand(intent, flags, startId)
     }
 
     private fun setService(phishSource: String) {
-        // Build a PendingIntent that can be used to launch the UI.
 
-
-        // Because ExoPlayer will manage the MediaSession, add the service as a callback for
-        // state changes.
-        mediaController = MediaControllerCompat(this, mediaSession).also {
-            it.registerCallback(MediaControllerCallback())
-        }
-
-        notificationBuilder = NotificationBuilder(this)
-        notificationManager = NotificationManagerCompat.from(this)
-
-        becomingNoisyReceiver =
-                BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
 
         mediaSource = JsonSource(context = this, source = Uri.parse(phishSource))
 
@@ -172,7 +171,6 @@ class MusicService : androidx.media.MediaBrowserServiceCompat() {
      */
     override fun onTaskRemoved(rootIntent: Intent) {
         super.onTaskRemoved(rootIntent)
-
 
         /**
          * By stopping playback, the player will transition to [Player.STATE_IDLE]. This will

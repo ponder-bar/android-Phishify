@@ -14,62 +14,65 @@
   ~ limitations under the License.
   -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:dist="http://schemas.android.com/apk/distribution"
-    package="com.example.android.uamp">
+  xmlns:dist="http://schemas.android.com/apk/distribution"
+  package="com.example.android.uamp">
 
-    <application
-        android:allowBackup="true"
-        android:fontFamily="sans-serif-black"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
-        android:supportsRtl="true"
-        android:targetSandboxVersion="2"
-        android:theme="@style/AppTheme">
+  <application
+    android:allowBackup="true"
+    android:fontFamily="sans-serif-black"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:targetSandboxVersion="2"
+    android:theme="@style/AppTheme">
 
-        <!-- Enable instant app support -->
-        <dist:module dist:instant="true" />
+    <!-- Enable instant app support -->
+    <dist:module dist:instant="true"/>
 
-        <activity android:name=".YearActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+    <activity
+      android:name=".YearActivity"
+      android:launchMode="singleInstance">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
 
-        <activity
-            android:name=".MainActivity"
-            android:parentActivityName=".YearActivity">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".YearActivity" />
+    <activity
+      android:launchMode="singleTop"
+      android:name=".MainActivity"
+      android:parentActivityName=".YearActivity">
+      <meta-data
+        android:name="android.support.PARENT_ACTIVITY"
+        android:value=".YearActivity"/>
 
-            <!-- App links for http -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+      <!-- App links for http -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data
-                    android:host="example.android.com"
-                    android:pathPattern="/uamp"
-                    android:scheme="http" />
-            </intent-filter>
+        <data
+          android:host="example.android.com"
+          android:pathPattern="/uamp"
+          android:scheme="http"/>
+      </intent-filter>
 
-            <!-- App links for https -->
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+      <!-- App links for https -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
 
-                <data
-                    android:host="example.android.com"
-                    android:pathPattern="/uamp"
-                    android:scheme="https" />
-            </intent-filter>
-        </activity>
-    </application>
+        <data
+          android:host="example.android.com"
+          android:pathPattern="/uamp"
+          android:scheme="https"/>
+      </intent-filter>
+    </activity>
+  </application>
 
 </manifest>
