@@ -44,8 +44,12 @@ import com.example.android.uamp.media.extensions.title
 import com.example.android.uamp.media.extensions.trackCount
 import com.example.android.uamp.media.extensions.trackNumber
 import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import khttp.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.json.JSONArray
+import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
@@ -95,12 +99,12 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
             // Get the base URI to fix up relative references later.
             val baseUri = catalogUri.toString().removeSuffix(catalogUri.lastPathSegment ?: "")
 
-            musicCat.music.map { song ->
+            musicCat.tracks.map { song ->
                 // The JSON may have paths that are relative to the source of the JSON
                 // itself. We need to fix them up here to turn them into absolute paths.
                 catalogUri.scheme?.let { scheme ->
-                    if (!song.source.startsWith(scheme)) {
-                        song.source = baseUri + song.source
+                    if (!song.mp3.startsWith(scheme)) {
+                        song.mp3 = baseUri + song.mp3
                     }
                     if (!song.image.startsWith(scheme)) {
                         song.image = baseUri + song.image
@@ -108,16 +112,16 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
                 }
 
                 // Block on downloading artwork.
-                val art = glide.applyDefaultRequestOptions(glideOptions)
+               /* val art = glide.applyDefaultRequestOptions(glideOptions)
                     .asBitmap()
                     .load(song.image)
                     .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                    .get()
+                    .get()*/
 
                 MediaMetadataCompat.Builder()
                     .from(song)
                     .apply {
-                        albumArt = art
+                        albumArt = null
                     }
                     .build()
             }.toList()
@@ -133,9 +137,33 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
      */
     @Throws(IOException::class)
     private fun downloadJson(catalogUri: Uri): JsonCatalog {
-        val catalogConn = URL(catalogUri.toString())
-        val reader = BufferedReader(InputStreamReader(catalogConn.openStream()))
-        return Gson().fromJson<JsonCatalog>(reader, JsonCatalog::class.java)
+        val start = System.currentTimeMillis()
+        val auth = mapOf("Authorization" to
+                "Bearer " +
+                "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
+                "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
+        val theYear = get("$catalogUri", headers = auth)
+
+        val gson = GsonBuilder().create()
+        val shows = gson.fromJson(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
+
+        var showData = shows.data
+
+        for (sh in showData) {
+            for (test in sh.tracks) {
+                test.venue_name = sh.venue_name
+            }
+        }
+
+        var flatYear: List<JsonPhishTracks> = showData.flatMap { it.tracks }
+        val rootObj = JSONObject()
+        var yearJson = Gson().toJson(flatYear)
+        val tracksObj = JSONArray(yearJson)
+        rootObj.put("tracks", tracksObj)
+
+        val end = System.currentTimeMillis()
+        println("TIME: ${end - start} ms")
+        return Gson().fromJson<JsonCatalog>(rootObj.toString(), JsonCatalog::class.java)
     }
 }
 
@@ -150,20 +178,20 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
 
     id = jsonMusic.id
     title = jsonMusic.title
-    artist = jsonMusic.artist
-    album = jsonMusic.album
+    artist = jsonMusic.venue_name
+    album = jsonMusic.show_date
     duration = durationMs
     genre = jsonMusic.genre
-    mediaUri = jsonMusic.source
+    mediaUri = jsonMusic.mp3
     albumArtUri = jsonMusic.image
-    trackNumber = jsonMusic.trackNumber
+    trackNumber = jsonMusic.position
     trackCount = jsonMusic.totalTrackCount
     flag = MediaItem.FLAG_PLAYABLE
 
     // To make things easier for *displaying* these, set the display properties as well.
-    displayTitle = jsonMusic.title
-    displaySubtitle = jsonMusic.artist
-    displayDescription = jsonMusic.album
+    displayTitle = jsonMusic.set_name
+    displaySubtitle = jsonMusic.title
+    displayDescription = jsonMusic.show_date
     displayIconUri = jsonMusic.image
 
     // Add downloadStatus to force the creation of an "extras" bundle in the resulting
@@ -179,7 +207,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
  * Wrapper object for our JSON in order to be processed easily by GSON.
  */
 class JsonCatalog {
-    var music: List<JsonMusic> = ArrayList()
+    var tracks: List<JsonMusic> = ArrayList()
 }
 
 /**
@@ -217,40 +245,42 @@ class JsonCatalog {
 class JsonMusic {
     var id: String = ""
     var title: String = ""
-    var album: String = ""
-    var artist: String = ""
+    var set_name: String = ""
+    var show_date: String = ""
+    var venue_name: String = ""
+    var artist: String = "Phish"
     var genre: String = ""
-    var source: String = ""
+    var mp3: String = ""
     var image: String = ""
-    var trackNumber: Long = 0
+    var position: Long = 0
     var totalTrackCount: Long = 0
     var duration: Long = -1
     var site: String = ""
 }
 
-class JsonYears {
-    var date: String = ""
-    var showCount: String = ""
+class JsonPhishShowWrap {
+    var data: List<JsonPhishShow> = emptyList()
 }
 
-class JsonShows {
+class JsonPhishShow {
     var id: String = ""
     var date: String = ""
     var duration: String = ""
-    var incomplete: String = ""
-    var tourId: String = ""
-    var venue: String = ""
-    var tracks: JsonTracks = JsonTracks()
-
+    var sbd: String = ""
+    var tour_id: String = ""
+    var venue_name: String = ""
+    var tracks: List<JsonPhishTracks> = emptyList()
 }
 
-class JsonTracks {
+class JsonPhishTracks {
     var id: String = ""
-    var songTitle: String = ""
+    var title: String = ""
     var position: String = ""
+    var venue_name: String = ""
+    var show_date: String = ""
     var duration: Long = -1
-    var set: String = ""
-    var source: String = ""
+    var set_name: String = ""
+    var mp3: String = ""
 }
 
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px

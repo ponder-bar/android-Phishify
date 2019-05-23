@@ -74,7 +74,7 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
     init {
         val rootList = mediaIdToChildren[UAMP_BROWSABLE_ROOT] ?: mutableListOf()
 
-        val recommendedMetadata = MediaMetadataCompat.Builder().apply {
+        /*val recommendedMetadata = MediaMetadataCompat.Builder().apply {
             id = UAMP_RECOMMENDED_ROOT
             title = context.getString(R.string.recommended_title)
             albumArtUri = imageUriRoot +
@@ -87,11 +87,12 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
             title = context.getString(R.string.albums_title)
             albumArtUri = imageUriRoot + context.resources.getResourceEntryName(R.drawable.ic_album)
             flag = MediaBrowserCompat.MediaItem.FLAG_BROWSABLE
-        }.build()
+        }.build()*/
 
-        rootList += recommendedMetadata
+        /*rootList += recommendedMetadata
         rootList += albumsMetadata
-        mediaIdToChildren[UAMP_BROWSABLE_ROOT] = rootList
+
+        mediaIdToChildren[UAMP_BROWSABLE_ROOT] = rootList*/
 
         musicSource.forEach { mediaItem ->
             val albumMediaId = mediaItem.album.urlEncoded
@@ -99,12 +100,12 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
             albumChildren += mediaItem
 
             // Add the first track of each album to the 'Recommended' category
-            if (mediaItem.trackNumber == 1L){
-                val recommendedChildren = mediaIdToChildren[UAMP_RECOMMENDED_ROOT]
-                                        ?: mutableListOf()
-                recommendedChildren += mediaItem
-                mediaIdToChildren[UAMP_RECOMMENDED_ROOT] = recommendedChildren
-            }
+//            if (mediaItem.trackNumber == 1L){
+//                val recommendedChildren = mediaIdToChildren[UAMP_RECOMMENDED_ROOT]
+//                                        ?: mutableListOf()
+//                recommendedChildren += mediaItem
+//                mediaIdToChildren[UAMP_RECOMMENDED_ROOT] = recommendedChildren
+//            }
         }
     }
 
@@ -125,15 +126,15 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
             id = mediaItem.album.urlEncoded
             title = mediaItem.album
             artist = mediaItem.artist
-            albumArt = mediaItem.albumArt
-            albumArtUri = mediaItem.albumArtUri.toString()
+            //albumArt = mediaItem.albumArt
+            //albumArtUri = mediaItem.albumArtUri.toString()
             flag = MediaItem.FLAG_BROWSABLE
         }.build()
 
         // Adds this album to the 'Albums' category.
-        val rootList = mediaIdToChildren[UAMP_ALBUMS_ROOT] ?: mutableListOf()
+        val rootList = mediaIdToChildren[UAMP_BROWSABLE_ROOT] ?: mutableListOf()
         rootList += albumMetadata
-        mediaIdToChildren[UAMP_ALBUMS_ROOT] = rootList
+        mediaIdToChildren[UAMP_BROWSABLE_ROOT] = rootList
 
         // Insert the album's root with an empty list for its children, and return the list.
         return mutableListOf<MediaMetadataCompat>().also {

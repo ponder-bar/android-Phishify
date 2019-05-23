@@ -64,7 +64,7 @@ class MediaItemFragmentViewModel(
                     child.mediaId!!,
                     child.description.title.toString(),
                     subtitle.toString(),
-                    child.description.iconUri!!,
+                    //child.description.iconUri!!,
                     child.isBrowsable,
                     getResourceForMediaId(child.mediaId!!)
                 )

@@ -70,9 +70,9 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
             holder.subtitleView.text = mediaItem.subtitle
             holder.playbackState.setImageResource(mediaItem.playbackRes)
 
-            Glide.with(holder.albumArt)
+            /*Glide.with(holder.albumArt)
                     .load(mediaItem.albumArtUri)
-                    .into(holder.albumArt)
+                    .into(holder.albumArt)*/
         }
     }
 
@@ -85,8 +85,8 @@ class MediaViewHolder(view: View,
                       itemClickedListener: (MediaItemData) -> Unit
 ) : RecyclerView.ViewHolder(view) {
 
-    val titleView: TextView = view.title
-    val subtitleView: TextView = view.subtitle
+    val titleView: TextView = view.subtitle
+    val subtitleView: TextView = view.title
     val albumArt: ImageView = view.albumArt
     val playbackState: ImageView = view.item_state
 
