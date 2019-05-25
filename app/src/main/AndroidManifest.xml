@@ -47,9 +47,9 @@
     </activity>
 
     <activity
-      android:launchMode="singleTop"
       android:name=".MainActivity"
-      android:parentActivityName=".YearActivity">
+      android:parentActivityName=".YearActivity"
+      android:launchMode="singleTop">
       <meta-data
         android:name="android.support.PARENT_ACTIVITY"
         android:value=".YearActivity"/>

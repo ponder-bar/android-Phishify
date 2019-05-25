@@ -90,13 +90,14 @@ class NowPlayingFragment : Fragment() {
      */
     private fun updateUI(view: View, metadata: NowPlayingFragmentViewModel.NowPlayingMetadata) {
         val albumArtView = view.findViewById<ImageView>(R.id.albumArt)
-        if (metadata.albumArtUri == Uri.EMPTY) {
+        albumArtView.setImageResource(R.drawable.ic_album_black_24dp)
+       /* if (metadata.albumArtUri == Uri.EMPTY) {
             albumArtView.setImageResource(R.drawable.ic_album_black_24dp)
         } else {
             Glide.with(view)
                     .load(metadata.albumArtUri)
                     .into(albumArtView)
-        }
+        }*/
         view.findViewById<TextView>(R.id.title).text = metadata.title
         view.findViewById<TextView>(R.id.subtitle).text = metadata.subtitle
         view.findViewById<TextView>(R.id.duration).text = metadata.duration

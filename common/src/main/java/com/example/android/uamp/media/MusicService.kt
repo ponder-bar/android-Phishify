@@ -138,7 +138,17 @@ open class MusicService : MediaBrowserServiceCompat() {
          */
         sessionToken = mediaSession.sessionToken
 
+        // Because ExoPlayer will manage the MediaSession, add the service as a callback for
+        // state changes.
+        mediaController = MediaControllerCompat(this, mediaSession).also {
+            it.registerCallback(MediaControllerCallback())
+        }
 
+        notificationBuilder = NotificationBuilder(this)
+        notificationManager = NotificationManagerCompat.from(this)
+
+        becomingNoisyReceiver =
+                BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -155,17 +165,7 @@ open class MusicService : MediaBrowserServiceCompat() {
     }
 
     private fun setService(phishSource: String) {
-        // Because ExoPlayer will manage the MediaSession, add the service as a callback for
-        // state changes.
-        mediaController = MediaControllerCompat(this, mediaSession).also {
-            it.registerCallback(MediaControllerCallback())
-        }
 
-        notificationBuilder = NotificationBuilder(this)
-        notificationManager = NotificationManagerCompat.from(this)
-
-        becomingNoisyReceiver =
-                BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
         mediaSource = JsonSource(context = this, source = Uri.parse(phishSource))
@@ -277,7 +277,7 @@ open class MusicService : MediaBrowserServiceCompat() {
         // If the media source is ready, the results will be set synchronously here.
         val resultsSent = mediaSource.whenReady { successfullyInitialized ->
             if (successfullyInitialized) {
-                browseTree = BrowseTree(applicationContext, musicSource = mediaSource)
+                browseTree = BrowseTree(this.applicationContext, musicSource = mediaSource)
                 val children = browseTree[parentMediaId]?.map { item ->
                     MediaItem(item.description, item.flag)
                 }

@@ -65,11 +65,11 @@ import java.util.concurrent.TimeUnit
 class JsonSource(context: Context, private val source: Uri) : AbstractMusicSource() {
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
-    private val glide: RequestManager
+    //private val glide: RequestManager
 
     init {
         state = STATE_INITIALIZING
-        glide = Glide.with(context)
+        //glide = Glide.with(context)
     }
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
@@ -174,13 +174,15 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
 fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.Builder {
     // The duration from the JSON is given in seconds, but the rest of the code works in
     // milliseconds. Here's where we convert to the proper units.
+
+    //Phish.in time already in Ms
     val durationMs = TimeUnit.SECONDS.toMillis(jsonMusic.duration)
 
     id = jsonMusic.id
     title = jsonMusic.title
     artist = jsonMusic.venue_name
     album = jsonMusic.show_date
-    duration = durationMs
+    duration = jsonMusic.duration
     genre = jsonMusic.genre
     mediaUri = jsonMusic.mp3
     albumArtUri = jsonMusic.image
