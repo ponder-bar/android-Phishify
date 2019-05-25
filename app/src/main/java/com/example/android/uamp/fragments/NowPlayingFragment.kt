@@ -98,8 +98,8 @@ class NowPlayingFragment : Fragment() {
                     .load(metadata.albumArtUri)
                     .into(albumArtView)
         }*/
-        view.findViewById<TextView>(R.id.title).text = metadata.title
-        view.findViewById<TextView>(R.id.subtitle).text = metadata.subtitle
+        view.findViewById<TextView>(R.id.title).text = metadata.subtitle
+        view.findViewById<TextView>(R.id.subtitle).text = metadata.title
         view.findViewById<TextView>(R.id.duration).text = metadata.duration
     }
 }

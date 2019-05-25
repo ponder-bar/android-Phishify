@@ -39,12 +39,15 @@
       app:layout_constraintGuide_end="64dp" />
 
     <View
+      android:id="@+id/view2"
       android:layout_width="match_parent"
       android:layout_height="96dp"
       android:layout_marginTop="-24dp"
+      android:layout_marginEnd="8dp"
       android:background="@drawable/media_overlay_background"
       app:layout_constraintBottom_toBottomOf="@+id/albumbArt"
-      app:layout_constraintTop_toBottomOf="@id/divider" />
+      app:layout_constraintEnd_toEndOf="@+id/duration"
+      app:layout_constraintTop_toBottomOf="@id/divider"/>
 
     <ImageButton
       android:id="@+id/media_button"
@@ -88,29 +91,35 @@
 
     <TextView
       android:id="@+id/position"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
+      android:layout_width="81dp"
+      android:layout_height="31dp"
       android:layout_marginTop="8dp"
-      android:layout_marginStart="@dimen/text_margin"
-      android:layout_marginEnd="@dimen/text_margin"
       android:ellipsize="end"
       android:maxLines="1"
       android:textAppearance="@style/TextAppearance.Uamp.Title"
-      app:layout_constraintTop_toBottomOf="@id/divider"
       app:layout_constraintRight_toRightOf="parent"
-      tools:text="0:00" />
+      app:layout_constraintTop_toBottomOf="@id/divider"
+      tools:text="0:00"/>
 
     <TextView
       android:id="@+id/duration"
-      android:layout_width="0dp"
-      android:layout_height="wrap_content"
-      android:layout_marginStart="@dimen/text_margin"
-      android:layout_marginEnd="@dimen/text_margin"
+      android:layout_width="83dp"
+      android:layout_height="36dp"
       android:ellipsize="end"
       android:maxLines="1"
       android:textAppearance="@style/TextAppearance.Uamp.Subtitle"
-      app:layout_constraintTop_toBottomOf="@id/position"
       app:layout_constraintRight_toRightOf="parent"
-      tools:text="0:00" />
+      app:layout_constraintTop_toBottomOf="@id/position"
+      tools:text="0:00"/>
+    <SeekBar
+      android:id="@+id/seekBar"
+      android:layout_width="380dp"
+      android:layout_height="20dp"
+      android:layout_marginBottom="8dp"
+      android:layout_marginStart="8dp"
+      android:layout_marginEnd="8dp"
+      app:layout_constraintBottom_toTopOf="@+id/view2"
+      app:layout_constraintEnd_toEndOf="parent"
+      app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
