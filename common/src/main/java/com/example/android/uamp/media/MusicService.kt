@@ -117,7 +117,8 @@ open class MusicService : MediaBrowserServiceCompat() {
         // Build a PendingIntent that can be used to launch the UI.
         val sessionActivityPendingIntent =
                 packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                    PendingIntent.getActivity(this, 0, sessionIntent, 0)
+                    sessionIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
+                    PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT )
                 }
 
         // Create a new MediaSession.
@@ -166,6 +167,7 @@ open class MusicService : MediaBrowserServiceCompat() {
 
     private fun setService(phishSource: String) {
 
+
         // The media library is built from a remote JSON file. We'll create the source here,
         // and then use a suspend function to perform the download off the main thread.
         mediaSource = JsonSource(context = this, source = Uri.parse(phishSource))
@@ -191,6 +193,8 @@ open class MusicService : MediaBrowserServiceCompat() {
             connector.setPlaybackPreparer(playbackPreparer)
             connector.setQueueNavigator(UampQueueNavigator(mediaSession))
         }
+
+
 
         packageValidator = PackageValidator(this, R.xml.allowed_media_browser_callers)
     }
@@ -365,7 +369,9 @@ open class MusicService : MediaBrowserServiceCompat() {
 
             // Skip building a notification when state is "none" and metadata is null.
             val notification = if (mediaController.metadata != null
-                    && updatedState != PlaybackStateCompat.STATE_NONE) {
+                    && updatedState != PlaybackStateCompat.STATE_NONE
+                    && updatedState != PlaybackStateCompat.STATE_PLAYING
+                    && updatedState != PlaybackStateCompat.STATE_PAUSED) {
                 notificationBuilder.buildNotification(mediaSession.sessionToken)
             } else {
                 null

@@ -201,4 +201,4 @@ class NowPlayingFragmentViewModel(
 }
 
 private const val TAG = "NowPlayingFragmentVM"
-private const val POSITION_UPDATE_INTERVAL_MILLIS = 100L
+private const val POSITION_UPDATE_INTERVAL_MILLIS = 10L

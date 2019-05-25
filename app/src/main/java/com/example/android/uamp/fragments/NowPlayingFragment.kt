@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.SeekBar
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -41,6 +42,7 @@ class NowPlayingFragment : Fragment() {
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var nowPlayingViewModel: NowPlayingFragmentViewModel
     private lateinit var positionTextView: TextView
+    private var seekBar: SeekBar? = null
 
     companion object {
         fun newInstance() = NowPlayingFragment()
@@ -83,6 +85,8 @@ class NowPlayingFragment : Fragment() {
                 NowPlayingMetadata.timestampToMSS(context, 0L)
         positionTextView = view.findViewById<TextView>(R.id.position)
                 .apply { text = NowPlayingMetadata.timestampToMSS(context, 0L) }
+
+        //seekBar?.setOnSeekBarChangeListener(ob)
     }
 
     /**

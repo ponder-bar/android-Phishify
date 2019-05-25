@@ -38,8 +38,7 @@
       android:resource="@xml/automotive_app_desc"/>
 
     <activity
-      android:name=".YearActivity"
-      android:launchMode="singleInstance">
+      android:name=".YearActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
@@ -50,9 +49,6 @@
       android:name=".MainActivity"
       android:parentActivityName=".YearActivity"
       android:launchMode="singleTop">
-      <meta-data
-        android:name="android.support.PARENT_ACTIVITY"
-        android:value=".YearActivity"/>
 
       <!-- App links for http -->
       <intent-filter>
