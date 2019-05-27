@@ -29,6 +29,7 @@ import kotlinx.android.synthetic.main.fragment_mediaitem.view.albumArt
 import kotlinx.android.synthetic.main.fragment_mediaitem.view.item_state
 import kotlinx.android.synthetic.main.fragment_mediaitem.view.subtitle
 import kotlinx.android.synthetic.main.fragment_mediaitem.view.title
+import kotlinx.android.synthetic.main.fragment_nowplaying.view.*
 
 /**
  * [RecyclerView.Adapter] of [MediaItemData]s used by the [MediaItemFragment].
@@ -69,6 +70,7 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
             holder.titleView.text = mediaItem.title
             holder.subtitleView.text = mediaItem.subtitle
             holder.playbackState.setImageResource(mediaItem.playbackRes)
+            holder.duration.text = mediaItem.duration
 
             /*Glide.with(holder.albumArt)
                     .load(mediaItem.albumArtUri)
@@ -88,6 +90,7 @@ class MediaViewHolder(view: View,
     val titleView: TextView = view.subtitle
     val subtitleView: TextView = view.title
     val albumArt: ImageView = view.albumArt
+    val duration: TextView = view.duration
     val playbackState: ImageView = view.item_state
 
     var item: MediaItemData? = null

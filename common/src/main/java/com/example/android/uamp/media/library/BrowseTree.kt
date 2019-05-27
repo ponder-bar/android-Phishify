@@ -17,20 +17,10 @@
 package com.example.android.uamp.media.library
 
 import android.content.Context
-import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaMetadataCompat
 import com.example.android.uamp.media.MusicService
-import com.example.android.uamp.media.R
-import com.example.android.uamp.media.extensions.album
-import com.example.android.uamp.media.extensions.albumArt
-import com.example.android.uamp.media.extensions.albumArtUri
-import com.example.android.uamp.media.extensions.artist
-import com.example.android.uamp.media.extensions.flag
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.title
-import com.example.android.uamp.media.extensions.trackNumber
-import com.example.android.uamp.media.extensions.urlEncoded
+import com.example.android.uamp.media.extensions.*
 
 /**
  * Represents a tree of media that's used by [MusicService.onLoadChildren].
@@ -126,6 +116,7 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
             id = mediaItem.album.urlEncoded
             title = mediaItem.album
             artist = mediaItem.artist
+            duration = mediaItem.duration
             //albumArt = mediaItem.albumArt
             //albumArtUri = mediaItem.albumArtUri.toString()
             flag = MediaItem.FLAG_BROWSABLE

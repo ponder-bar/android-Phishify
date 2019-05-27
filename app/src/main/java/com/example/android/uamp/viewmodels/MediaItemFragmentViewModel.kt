@@ -35,13 +35,15 @@ import com.example.android.uamp.common.NOTHING_PLAYING
 import com.example.android.uamp.fragments.MediaItemFragment
 import com.example.android.uamp.media.extensions.id
 import com.example.android.uamp.media.extensions.isPlaying
+import java.sql.Time
+import java.time.format.DateTimeFormatter
 
 /**
  * [ViewModel] for [MediaItemFragment].
  */
 class MediaItemFragmentViewModel(
-    private val mediaId: String,
-    mediaSessionConnection: MediaSessionConnection
+        private val mediaId: String,
+        mediaSessionConnection: MediaSessionConnection
 ) : ViewModel() {
 
     /**
@@ -60,16 +62,28 @@ class MediaItemFragmentViewModel(
         override fun onChildrenLoaded(parentId: String, children: List<MediaItem>) {
             val itemsList = children.map { child ->
                 val subtitle = child.description.subtitle ?: ""
+                val duration = child.description.extras?.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
+                        ?: 0
+
                 MediaItemData(
-                    child.mediaId!!,
-                    child.description.title.toString(),
-                    subtitle.toString(),
-                    //child.description.iconUri!!,
-                    child.isBrowsable,
-                    getResourceForMediaId(child.mediaId!!)
+                        child.mediaId!!,
+                        child.description.title.toString(),
+                        subtitle.toString(),
+                        //child.description.iconUri!!,
+                        convertToTimeStamp(duration),
+                        child.isBrowsable,
+                        getResourceForMediaId(child.mediaId!!)
                 )
             }
             _mediaItems.postValue(itemsList)
+        }
+
+        fun convertToTimeStamp(duration: Long): String {
+            val totalSeconds = Math.floor(duration / 1E3).toInt()
+            val minutes = totalSeconds / 60
+            val remainingSeconds = totalSeconds - (minutes * 60)
+
+            return if (duration == 0L) "" else String.format("%d:%02d", minutes, remainingSeconds)
         }
     }
 
@@ -153,8 +167,8 @@ class MediaItemFragmentViewModel(
     }
 
     private fun updateState(
-        playbackState: PlaybackStateCompat,
-        mediaMetadata: MediaMetadataCompat
+            playbackState: PlaybackStateCompat,
+            mediaMetadata: MediaMetadataCompat
     ): List<MediaItemData> {
 
         val newResId = when (playbackState.isPlaying) {
@@ -169,8 +183,8 @@ class MediaItemFragmentViewModel(
     }
 
     class Factory(
-        private val mediaId: String,
-        private val mediaSessionConnection: MediaSessionConnection
+            private val mediaId: String,
+            private val mediaSessionConnection: MediaSessionConnection
     ) : ViewModelProvider.NewInstanceFactory() {
 
         @Suppress("unchecked_cast")

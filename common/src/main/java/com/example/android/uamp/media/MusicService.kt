@@ -36,6 +36,7 @@ import android.support.v4.media.session.PlaybackStateCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
+import com.example.android.uamp.media.extensions.duration
 import com.example.android.uamp.media.extensions.flag
 import com.example.android.uamp.media.library.BrowseTree
 import com.example.android.uamp.media.library.JsonSource
@@ -117,8 +118,7 @@ open class MusicService : MediaBrowserServiceCompat() {
         // Build a PendingIntent that can be used to launch the UI.
         val sessionActivityPendingIntent =
                 packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                    sessionIntent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-                    PendingIntent.getActivity(this, 0, sessionIntent, PendingIntent.FLAG_UPDATE_CURRENT )
+                    PendingIntent.getActivity(this, 0, sessionIntent, 0)
                 }
 
         // Create a new MediaSession.
@@ -283,6 +283,7 @@ open class MusicService : MediaBrowserServiceCompat() {
             if (successfullyInitialized) {
                 browseTree = BrowseTree(this.applicationContext, musicSource = mediaSource)
                 val children = browseTree[parentMediaId]?.map { item ->
+                    item.description.extras?.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, item.duration)
                     MediaItem(item.description, item.flag)
                 }
                 result.sendResult(children)

@@ -36,6 +36,7 @@ data class MediaItemData(
         val title: String,
         val subtitle: String,
         //val albumArtUri: Uri,
+        val duration: String,
         val browsable: Boolean,
         var playbackRes: Int) {
 
