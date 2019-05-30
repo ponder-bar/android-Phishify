@@ -16,20 +16,16 @@
 
 package com.example.android.uamp
 
-import androidx.recyclerview.widget.ListAdapter
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import com.bumptech.glide.Glide
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android.uamp.MediaItemData.Companion.PLAYBACK_RES_CHANGED
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.albumArt
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.item_state
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.subtitle
-import kotlinx.android.synthetic.main.fragment_mediaitem.view.title
-import kotlinx.android.synthetic.main.fragment_nowplaying.view.*
+import kotlinx.android.synthetic.main.fragment_mediaitem.view.*
+
 
 /**
  * [RecyclerView.Adapter] of [MediaItemData]s used by the [MediaItemFragment].
@@ -69,6 +65,7 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
             holder.item = mediaItem
             holder.titleView.text = mediaItem.title
             holder.subtitleView.text = mediaItem.subtitle
+            holder.writer.text = mediaItem.writer
             holder.playbackState.setImageResource(mediaItem.playbackRes)
             holder.duration.text = mediaItem.duration
 
@@ -90,7 +87,8 @@ class MediaViewHolder(view: View,
     val titleView: TextView = view.subtitle
     val subtitleView: TextView = view.title
     val albumArt: ImageView = view.albumArt
-    val duration: TextView = view.duration
+    val writer: TextView = view.location
+    val duration: TextView = view.location
     val playbackState: ImageView = view.item_state
 
     var item: MediaItemData? = null

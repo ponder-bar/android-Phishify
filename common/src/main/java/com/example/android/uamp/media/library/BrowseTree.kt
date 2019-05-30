@@ -117,6 +117,7 @@ class BrowseTree(context: Context, musicSource: MusicSource) {
             title = mediaItem.album
             artist = mediaItem.artist
             duration = mediaItem.duration
+            writer = mediaItem.writer
             //albumArt = mediaItem.albumArt
             //albumArtUri = mediaItem.albumArtUri.toString()
             flag = MediaItem.FLAG_BROWSABLE

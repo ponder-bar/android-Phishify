@@ -21,12 +21,7 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaBrowserCompat.SubscriptionCallback
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.example.android.uamp.MediaItemData
 import com.example.android.uamp.R
 import com.example.android.uamp.common.EMPTY_PLAYBACK_STATE
@@ -35,8 +30,6 @@ import com.example.android.uamp.common.NOTHING_PLAYING
 import com.example.android.uamp.fragments.MediaItemFragment
 import com.example.android.uamp.media.extensions.id
 import com.example.android.uamp.media.extensions.isPlaying
-import java.sql.Time
-import java.time.format.DateTimeFormatter
 
 /**
  * [ViewModel] for [MediaItemFragment].
@@ -64,12 +57,14 @@ class MediaItemFragmentViewModel(
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
                         ?: 0
+                val location = child.description.extras?.getString(MediaMetadataCompat.METADATA_KEY_WRITER)
 
                 MediaItemData(
                         child.mediaId!!,
                         child.description.title.toString(),
                         subtitle.toString(),
                         //child.description.iconUri!!,
+                        location.toString(),
                         convertToTimeStamp(duration),
                         child.isBrowsable,
                         getResourceForMediaId(child.mediaId!!)

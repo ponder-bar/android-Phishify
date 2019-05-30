@@ -16,10 +16,9 @@
 
 package com.example.android.uamp
 
-import android.net.Uri
 import android.support.v4.media.MediaBrowserCompat
-import androidx.recyclerview.widget.DiffUtil
 import android.support.v4.media.MediaBrowserCompat.MediaItem
+import androidx.recyclerview.widget.DiffUtil
 import com.example.android.uamp.viewmodels.MediaItemFragmentViewModel
 
 /**
@@ -36,6 +35,7 @@ data class MediaItemData(
         val title: String,
         val subtitle: String,
         //val albumArtUri: Uri,
+        val writer: String,
         val duration: String,
         val browsable: Boolean,
         var playbackRes: Int) {

@@ -242,6 +242,13 @@ inline var MediaMetadataCompat.Builder.downloadStatus: Long
         putLong(MediaMetadataCompat.METADATA_KEY_DOWNLOAD_STATUS, value)
     }
 
+inline var MediaMetadataCompat.Builder.writer: String?
+    @Deprecated(NO_GET, level = DeprecationLevel.ERROR)
+    get() = throw IllegalAccessException("Cannot get from MediaMetadataCompat.Builder")
+    set(value) {
+        putString(MediaMetadataCompat.METADATA_KEY_WRITER, value)
+    }
+
 /**
  * Custom property for storing whether a [MediaMetadataCompat] item represents an
  * item that is [MediaItem.FLAG_BROWSABLE] or [MediaItem.FLAG_PLAYABLE].

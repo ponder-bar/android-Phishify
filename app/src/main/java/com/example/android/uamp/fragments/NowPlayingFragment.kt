@@ -16,7 +16,6 @@
 
 package com.example.android.uamp.fragments
 
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -28,7 +27,6 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.bumptech.glide.Glide
 import com.example.android.uamp.R
 import com.example.android.uamp.utils.InjectorUtils
 import com.example.android.uamp.viewmodels.MainActivityViewModel
@@ -81,7 +79,7 @@ class NowPlayingFragment : Fragment() {
             nowPlayingViewModel.mediaMetadata.value?.let { mainActivityViewModel.playMediaId(it.id) } }
 
         // Initialize playback duration and position to zero
-        view.findViewById<TextView>(R.id.duration).text =
+        view.findViewById<TextView>(R.id.location).text =
                 NowPlayingMetadata.timestampToMSS(context, 0L)
         positionTextView = view.findViewById<TextView>(R.id.position)
                 .apply { text = NowPlayingMetadata.timestampToMSS(context, 0L) }
@@ -104,6 +102,6 @@ class NowPlayingFragment : Fragment() {
         }*/
         view.findViewById<TextView>(R.id.title).text = metadata.subtitle
         view.findViewById<TextView>(R.id.subtitle).text = metadata.title
-        view.findViewById<TextView>(R.id.duration).text = metadata.duration
+        view.findViewById<TextView>(R.id.location).text = metadata.duration
     }
 }

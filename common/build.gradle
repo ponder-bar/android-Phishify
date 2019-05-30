@@ -70,7 +70,8 @@ dependencies {
         api "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     }
 
-    api "io.karn:khttp-android:$khttp_version"
+    implementation 'com.squareup.okio:okio:2.2.2'
+    implementation 'com.squareup.okhttp3:okhttp:4.0.0-alpha01'
 
     // Glide dependencies
     api "com.github.bumptech.glide:glide:$glide_version"

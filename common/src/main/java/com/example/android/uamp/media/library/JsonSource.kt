@@ -21,39 +21,20 @@ import android.net.Uri
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat.STATUS_NOT_DOWNLOADED
 import android.support.v4.media.MediaMetadataCompat
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.example.android.uamp.media.R
-import com.example.android.uamp.media.extensions.album
-import com.example.android.uamp.media.extensions.albumArt
-import com.example.android.uamp.media.extensions.albumArtUri
-import com.example.android.uamp.media.extensions.artist
-import com.example.android.uamp.media.extensions.displayDescription
-import com.example.android.uamp.media.extensions.displayIconUri
-import com.example.android.uamp.media.extensions.displaySubtitle
-import com.example.android.uamp.media.extensions.displayTitle
-import com.example.android.uamp.media.extensions.downloadStatus
-import com.example.android.uamp.media.extensions.duration
-import com.example.android.uamp.media.extensions.flag
-import com.example.android.uamp.media.extensions.genre
-import com.example.android.uamp.media.extensions.id
-import com.example.android.uamp.media.extensions.mediaUri
-import com.example.android.uamp.media.extensions.title
-import com.example.android.uamp.media.extensions.trackCount
-import com.example.android.uamp.media.extensions.trackNumber
-import com.google.gson.Gson
+import com.example.android.uamp.media.extensions.*
 import com.google.gson.GsonBuilder
-import khttp.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.Cache
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.BufferedReader
+import java.io.File
 import java.io.IOException
-import java.io.InputStreamReader
-import java.net.URL
 import java.util.concurrent.TimeUnit
 
 /**
@@ -65,17 +46,17 @@ import java.util.concurrent.TimeUnit
 class JsonSource(context: Context, private val source: Uri) : AbstractMusicSource() {
 
     private var catalog: List<MediaMetadataCompat> = emptyList()
-    //private val glide: RequestManager
+    private val contextTest: Context
 
     init {
         state = STATE_INITIALIZING
-        //glide = Glide.with(context)
+        contextTest = context
     }
 
     override fun iterator(): Iterator<MediaMetadataCompat> = catalog.iterator()
 
     override suspend fun load() {
-        updateCatalog(source)?.let { updatedCatalog ->
+        updateCatalog(source, contextTest)?.let { updatedCatalog ->
             catalog = updatedCatalog
             state = STATE_INITIALIZED
         } ?: run {
@@ -88,10 +69,10 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
      * Function to connect to a remote URI and download/process the JSON file that corresponds to
      * [MediaMetadataCompat] objects.
      */
-    private suspend fun updateCatalog(catalogUri: Uri): List<MediaMetadataCompat>? {
+    private suspend fun updateCatalog(catalogUri: Uri, context: Context): List<MediaMetadataCompat>? {
         return withContext(Dispatchers.IO) {
             val musicCat = try {
-                downloadJson(catalogUri)
+                downloadJson(catalogUri, context)
             } catch (ioException: IOException) {
                 return@withContext null
             }
@@ -112,18 +93,18 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
                 }
 
                 // Block on downloading artwork.
-               /* val art = glide.applyDefaultRequestOptions(glideOptions)
-                    .asBitmap()
-                    .load(song.image)
-                    .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
-                    .get()*/
+                /* val art = glide.applyDefaultRequestOptions(glideOptions)
+                     .asBitmap()
+                     .load(song.image)
+                     .submit(NOTIFICATION_LARGE_ICON_SIZE, NOTIFICATION_LARGE_ICON_SIZE)
+                     .get()*/
 
                 MediaMetadataCompat.Builder()
-                    .from(song)
-                    .apply {
-                        albumArt = null
-                    }
-                    .build()
+                        .from(song)
+                        .apply {
+                            albumArt = null
+                        }
+                        .build()
             }.toList()
         }
     }
@@ -136,34 +117,48 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
      * @return The catalog downloaded, or an empty catalog if an error occurred.
      */
     @Throws(IOException::class)
-    private fun downloadJson(catalogUri: Uri): JsonCatalog {
+    private fun downloadJson(catalogUri: Uri, context: Context): JsonCatalog {
+        return getPhishYearData(catalogUri, context)
+    }
+
+    private fun getPhishYearData(catalogUri: Uri, context: Context): JsonCatalog {
         val start = System.currentTimeMillis()
-        val auth = mapOf("Authorization" to
-                "Bearer " +
+
+        val cacheSize: Long = 10 * 1024 * 1024
+        val cache = Cache(File(context.cacheDir, "http"), cacheSize)
+
+        val apiKey = "Bearer " +
                 "bb2286b37f9df4df7c33d79bd2479925c5ec35531feab05e" +
-                "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9")
-        val theYear = get("$catalogUri", headers = auth)
+                "4375a20fad4369f3fc5128194360d9296d39c7f6bde839f9"
+
+        val client = OkHttpClient.Builder().cache(cache).build()
+        val request = Request.Builder().url(catalogUri.toString()).header("Authorization", apiKey).build()
+        val response = client.newCall(request).execute()
+        val theYear = response.body()?.string()
 
         val gson = GsonBuilder().create()
-        val shows = gson.fromJson(theYear.jsonObject.toString(), JsonPhishShowWrap::class.java)
+        val shows = gson.fromJson(theYear, JsonPhishShowWrap::class.java)
 
         var showData = shows.data
 
         for (sh in showData) {
+            sh.location = sh.venue.location
             for (test in sh.tracks) {
                 test.venue_name = sh.venue_name
+                test.location = sh.venue.location
             }
         }
 
         var flatYear: List<JsonPhishTracks> = showData.flatMap { it.tracks }
         val rootObj = JSONObject()
-        var yearJson = Gson().toJson(flatYear)
+        var yearJson = gson.toJson(flatYear)
         val tracksObj = JSONArray(yearJson)
         rootObj.put("tracks", tracksObj)
 
         val end = System.currentTimeMillis()
         println("TIME: ${end - start} ms")
-        return Gson().fromJson<JsonCatalog>(rootObj.toString(), JsonCatalog::class.java)
+        val result = gson.fromJson(rootObj.toString(), JsonCatalog::class.java)
+        return result
     }
 }
 
@@ -184,6 +179,7 @@ fun MediaMetadataCompat.Builder.from(jsonMusic: JsonMusic): MediaMetadataCompat.
     album = jsonMusic.show_date
     duration = jsonMusic.duration
     genre = jsonMusic.genre
+    writer = jsonMusic.location
     mediaUri = jsonMusic.mp3
     albumArtUri = jsonMusic.image
     trackNumber = jsonMusic.position
@@ -250,6 +246,7 @@ class JsonMusic {
     var set_name: String = ""
     var show_date: String = ""
     var venue_name: String = ""
+    var location: String = ""
     var artist: String = "Phish"
     var genre: String = ""
     var mp3: String = ""
@@ -270,6 +267,8 @@ class JsonPhishShow {
     var duration: String = ""
     var sbd: String = ""
     var tour_id: String = ""
+    var location: String = ""
+    var venue: JsonPhishVenue = JsonPhishVenue()
     var venue_name: String = ""
     var tracks: List<JsonPhishTracks> = emptyList()
 }
@@ -280,13 +279,20 @@ class JsonPhishTracks {
     var position: String = ""
     var venue_name: String = ""
     var show_date: String = ""
+    var location: String = ""
     var duration: Long = -1
     var set_name: String = ""
     var mp3: String = ""
 }
 
+class JsonPhishVenue {
+    var id: String = ""
+    var slug: String = ""
+    var location: String = ""
+}
+
 private const val NOTIFICATION_LARGE_ICON_SIZE = 144 // px
 
 private val glideOptions = RequestOptions()
-    .fallback(R.drawable.default_art)
-    .diskCacheStrategy(DiskCacheStrategy.RESOURCE)
+        .fallback(R.drawable.default_art)
+        .diskCacheStrategy(DiskCacheStrategy.RESOURCE)

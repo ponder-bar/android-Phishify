@@ -59,8 +59,7 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/text_margin"
-        android:layout_marginEnd="@dimen/text_margin"
+        android:layout_marginLeft="4dp"
         android:ellipsize="end"
         android:maxLines="1"
         android:textAppearance="@style/TextAppearance.Uamp.Title"
@@ -70,17 +69,18 @@
         tools:text="Song Title" />
 
     <TextView
-      android:id="@+id/subtitle"
-      android:layout_width="242dp"
-      android:layout_height="16dp"
-      android:ellipsize="end"
-      android:maxLines="1"
-      android:textAppearance="@style/TextAppearance.Uamp.Subtitle"
-      app:layout_constraintBottom_toBottomOf="parent"
-      app:layout_constraintLeft_toLeftOf="@+id/title"
-      app:layout_constraintTop_toBottomOf="@+id/center_guideline"
-      app:layout_constraintVertical_bias="0.2"
-      tools:text="Artist"/>
+        android:id="@+id/subtitle"
+        android:layout_width="240dp"
+        android:layout_height="22dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textAppearance="@style/TextAppearance.Uamp.Subtitle"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/duration"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="Artist" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/center_guideline"
@@ -88,16 +88,30 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
+
     <TextView
-      android:id="@+id/duration"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="4dp"
-      android:layout_marginStart="8dp"
-      android:layout_marginEnd="8dp"
-      app:layout_constraintEnd_toEndOf="parent"
-      app:layout_constraintStart_toEndOf="@+id/subtitle"
-      app:layout_constraintTop_toTopOf="@+id/center_guideline"
-      tools:text="Duration"/>
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/subtitle"
+        tools:text="Duration" />
+
+    <TextView
+        android:id="@+id/location"
+        android:layout_width="266dp"
+        android:layout_height="22dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/subtitle"
+        app:layout_constraintEnd_toStartOf="@+id/duration"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/title"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintVertical_bias="0.0"
+        tools:text="Location" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

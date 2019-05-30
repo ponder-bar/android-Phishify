@@ -38,27 +38,15 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.example.android.uamp.media.extensions.duration
 import com.example.android.uamp.media.extensions.flag
-import com.example.android.uamp.media.library.BrowseTree
-import com.example.android.uamp.media.library.JsonSource
-import com.example.android.uamp.media.library.MEDIA_SEARCH_SUPPORTED
-import com.example.android.uamp.media.library.MusicSource
-import com.example.android.uamp.media.library.UAMP_BROWSABLE_ROOT
-import com.example.android.uamp.media.library.UAMP_EMPTY_ROOT
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.ExoPlayerFactory
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.Timeline
+import com.example.android.uamp.media.extensions.writer
+import com.example.android.uamp.media.library.*
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.ext.mediasession.TimelineQueueNavigator
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * This class is the entry point for browsing and playback commands from the APP's UI
@@ -115,19 +103,39 @@ open class MusicService : MediaBrowserServiceCompat() {
     override fun onCreate() {
         super.onCreate()
 
+    }
+
+    @ExperimentalCoroutinesApi
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val clickedYear = intent?.getStringExtra("YEAR_TITLE")
+        var foreground = intent?.getStringExtra("FORE")
+        var notification = intent?.getParcelableExtra<Intent>("notificationIntent")
+        var phishJsonSource = ""
+        if (clickedYear != null) {
+            phishJsonSource = "$remoteJsonSource/$clickedYear"
+        }
+        if (foreground == null) {
+            setService(phishJsonSource, notification)
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+    @ExperimentalCoroutinesApi
+    private fun setService(phishSource: String, notificationIntent: Intent?) {
+
         // Build a PendingIntent that can be used to launch the UI.
-        val sessionActivityPendingIntent =
-                packageManager?.getLaunchIntentForPackage(packageName)?.let { sessionIntent ->
-                    PendingIntent.getActivity(this, 0, sessionIntent, 0)
-                }
+        val sessionActivityPendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT)
 
-        // Create a new MediaSession.
-        mediaSession = MediaSessionCompat(this, "MusicService")
-                .apply {
-                    setSessionActivity(sessionActivityPendingIntent)
-                    isActive = true
-                }
 
+        //Due to previous activity, we want to keep this as the same mediaSession
+        if (!this::mediaSession.isInitialized) {
+            // Create a new MediaSession.
+            mediaSession = MediaSessionCompat(this, "MusicService")
+                    .apply {
+                        setSessionActivity(sessionActivityPendingIntent)
+                        isActive = true
+                    }
+        }
         /**
          * In order for [MediaBrowserCompat.ConnectionCallback.onConnected] to be called,
          * a [MediaSessionCompat.Token] needs to be set on the [MediaBrowserServiceCompat].
@@ -137,8 +145,9 @@ open class MusicService : MediaBrowserServiceCompat() {
          * returns, or the connection will fail silently. (The system will not even call
          * [MediaBrowserCompat.ConnectionCallback.onConnectionFailed].)
          */
-        sessionToken = mediaSession.sessionToken
-
+        if (sessionToken == null) {
+            sessionToken = mediaSession.sessionToken
+        }
         // Because ExoPlayer will manage the MediaSession, add the service as a callback for
         // state changes.
         mediaController = MediaControllerCompat(this, mediaSession).also {
@@ -150,22 +159,6 @@ open class MusicService : MediaBrowserServiceCompat() {
 
         becomingNoisyReceiver =
                 BecomingNoisyReceiver(context = this, sessionToken = mediaSession.sessionToken)
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val clickedYear = intent?.getStringExtra("YEAR_TITLE")
-        var foreground = intent?.getStringExtra("FORE")
-        var phishJsonSource = ""
-        if (clickedYear != null) {
-            phishJsonSource = "$remoteJsonSource/$clickedYear"
-        }
-        if (foreground == null) {
-            setService(phishSource = phishJsonSource)
-        }
-        return super.onStartCommand(intent, flags, startId)
-    }
-
-    private fun setService(phishSource: String) {
 
 
         // The media library is built from a remote JSON file. We'll create the source here,
@@ -284,6 +277,7 @@ open class MusicService : MediaBrowserServiceCompat() {
                 browseTree = BrowseTree(this.applicationContext, musicSource = mediaSource)
                 val children = browseTree[parentMediaId]?.map { item ->
                     item.description.extras?.putLong(MediaMetadataCompat.METADATA_KEY_DURATION, item.duration)
+                    item.description.extras?.putString(MediaMetadataCompat.METADATA_KEY_WRITER, item.writer)
                     MediaItem(item.description, item.flag)
                 }
                 result.sendResult(children)
