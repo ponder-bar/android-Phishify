@@ -157,8 +157,7 @@ class JsonSource(context: Context, private val source: Uri) : AbstractMusicSourc
 
         val end = System.currentTimeMillis()
         println("TIME: ${end - start} ms")
-        val result = gson.fromJson(rootObj.toString(), JsonCatalog::class.java)
-        return result
+        return gson.fromJson(rootObj.toString(), JsonCatalog::class.java)
     }
 }
 

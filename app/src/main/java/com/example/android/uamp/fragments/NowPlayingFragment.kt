@@ -16,6 +16,7 @@
 
 package com.example.android.uamp.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -67,7 +68,7 @@ class NowPlayingFragment : Fragment() {
 
         // Attach observers to the LiveData coming from this ViewModel
         nowPlayingViewModel.mediaMetadata.observe(this,
-                Observer { mediaItem -> updateUI(view, mediaItem) })
+                Observer { mediaItem -> updateUI(context, view, mediaItem) })
         nowPlayingViewModel.mediaButtonRes.observe(this,
                 Observer { res -> view.findViewById<ImageView>(R.id.media_button).setImageResource(res) })
         nowPlayingViewModel.mediaPosition.observe(this,
@@ -79,7 +80,7 @@ class NowPlayingFragment : Fragment() {
             nowPlayingViewModel.mediaMetadata.value?.let { mainActivityViewModel.playMediaId(it.id) } }
 
         // Initialize playback duration and position to zero
-        view.findViewById<TextView>(R.id.location).text =
+        view.findViewById<TextView>(R.id.duration).text =
                 NowPlayingMetadata.timestampToMSS(context, 0L)
         positionTextView = view.findViewById<TextView>(R.id.position)
                 .apply { text = NowPlayingMetadata.timestampToMSS(context, 0L) }
@@ -90,7 +91,7 @@ class NowPlayingFragment : Fragment() {
     /**
      * Internal function used to update all UI elements except for the current item playback
      */
-    private fun updateUI(view: View, metadata: NowPlayingFragmentViewModel.NowPlayingMetadata) {
+    private fun updateUI(context: Context, view: View, metadata: NowPlayingFragmentViewModel.NowPlayingMetadata) {
         val albumArtView = view.findViewById<ImageView>(R.id.albumArt)
         albumArtView.setImageResource(R.drawable.ic_album_black_24dp)
        /* if (metadata.albumArtUri == Uri.EMPTY) {
@@ -102,6 +103,7 @@ class NowPlayingFragment : Fragment() {
         }*/
         view.findViewById<TextView>(R.id.title).text = metadata.subtitle
         view.findViewById<TextView>(R.id.subtitle).text = metadata.title
-        view.findViewById<TextView>(R.id.location).text = metadata.duration
+        view.findViewById<TextView>(R.id.duration).text = metadata.duration
+        //view.findViewById<SeekBar>(R.id.seekBar).max = NowPlayingMetadata.timestampToMSS(context, metadata.duration.toLong()).toInt()
     }
 }
