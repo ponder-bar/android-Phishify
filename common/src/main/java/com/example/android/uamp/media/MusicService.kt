@@ -38,6 +38,7 @@ import androidx.core.content.ContextCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.example.android.uamp.media.extensions.duration
 import com.example.android.uamp.media.extensions.flag
+import com.example.android.uamp.media.extensions.id
 import com.example.android.uamp.media.extensions.writer
 import com.example.android.uamp.media.library.*
 import com.google.android.exoplayer2.*
@@ -68,6 +69,7 @@ open class MusicService : MediaBrowserServiceCompat() {
 
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
+    private var clickedYear : String? = ""
 
     protected lateinit var mediaSession: MediaSessionCompat
     protected lateinit var mediaController: MediaControllerCompat
@@ -83,6 +85,7 @@ open class MusicService : MediaBrowserServiceCompat() {
     private var isForegroundService = false
 
     private val remoteJsonSource: String = "https://phish.in/api/v1/years"
+    private var phishJsonSource: String = ""
 
     private val uAmpAudioAttributes = AudioAttributes.Builder()
             .setContentType(C.CONTENT_TYPE_MUSIC)
@@ -107,11 +110,10 @@ open class MusicService : MediaBrowserServiceCompat() {
 
     @ExperimentalCoroutinesApi
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val clickedYear = intent?.getStringExtra("YEAR_TITLE")
+        clickedYear = intent?.getStringExtra("YEAR_TITLE")
         var foreground = intent?.getStringExtra("FORE")
         var notification = intent?.getParcelableExtra<Intent>("notificationIntent")
-        var phishJsonSource = ""
-        if (clickedYear != null) {
+        if (!clickedYear.isNullOrEmpty()) {
             phishJsonSource = "$remoteJsonSource/$clickedYear"
         }
         if (foreground == null) {
@@ -167,6 +169,8 @@ open class MusicService : MediaBrowserServiceCompat() {
         serviceScope.launch {
             mediaSource.load()
         }
+
+
 
         // ExoPlayer will manage the MediaSession for us.
         mediaSessionConnector = MediaSessionConnector(mediaSession).also { connector ->
@@ -361,12 +365,13 @@ open class MusicService : MediaBrowserServiceCompat() {
 
         private fun updateNotification(state: PlaybackStateCompat) {
             val updatedState = state.state
+            val testData = mediaController.metadata.id
 
             // Skip building a notification when state is "none" and metadata is null.
             val notification = if (mediaController.metadata != null
+                    && mediaController.metadata.description != null
                     && updatedState != PlaybackStateCompat.STATE_NONE
-                    && updatedState != PlaybackStateCompat.STATE_PLAYING
-                    && updatedState != PlaybackStateCompat.STATE_PAUSED) {
+                    && !testData.isNullOrEmpty()) {
                 notificationBuilder.buildNotification(mediaSession.sessionToken)
             } else {
                 null

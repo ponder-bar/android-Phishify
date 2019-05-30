@@ -104,6 +104,9 @@ class NowPlayingFragment : Fragment() {
         view.findViewById<TextView>(R.id.title).text = metadata.subtitle
         view.findViewById<TextView>(R.id.subtitle).text = metadata.title
         view.findViewById<TextView>(R.id.duration).text = metadata.duration
-        //view.findViewById<SeekBar>(R.id.seekBar).max = NowPlayingMetadata.timestampToMSS(context, metadata.duration.toLong()).toInt()
+        view.findViewById<TextView>(R.id.location).text = metadata.location
+        view.findViewById<TextView>(R.id.date).text = metadata.showdate
+        view.findViewById<TextView>(R.id.venue).text = metadata.artist
+
     }
 }
