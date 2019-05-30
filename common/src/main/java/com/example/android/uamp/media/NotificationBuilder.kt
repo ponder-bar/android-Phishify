@@ -95,8 +95,8 @@ class NotificationBuilder(private val context: Context) {
                 .setShowCancelButton(true)
 
         return builder.setContentIntent(controller.sessionActivity)
-                .setContentText(description.subtitle)
-                .setContentTitle(description.title)
+                .setContentText(description.title)
+                .setContentTitle(description.subtitle)
                 .setDeleteIntent(stopPendingIntent)
                 .setLargeIcon(description.iconBitmap)
                 .setOnlyAlertOnce(false)
