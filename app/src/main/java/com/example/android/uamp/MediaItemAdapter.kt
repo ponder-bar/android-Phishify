@@ -65,8 +65,8 @@ class MediaItemAdapter(private val itemClickedListener: (MediaItemData) -> Unit
             holder.item = mediaItem
             holder.titleView.text = mediaItem.title
             holder.subtitleView.text = mediaItem.subtitle
-            holder.writer.text = mediaItem.writer
             holder.playbackState.setImageResource(mediaItem.playbackRes)
+            holder.writer.text = mediaItem.writer
             holder.duration.text = mediaItem.duration
 
             /*Glide.with(holder.albumArt)
@@ -88,7 +88,7 @@ class MediaViewHolder(view: View,
     val subtitleView: TextView = view.title
     val albumArt: ImageView = view.albumArt
     val writer: TextView = view.location
-    val duration: TextView = view.location
+    val duration: TextView = view.duration
     val playbackState: ImageView = view.item_state
 
     var item: MediaItemData? = null

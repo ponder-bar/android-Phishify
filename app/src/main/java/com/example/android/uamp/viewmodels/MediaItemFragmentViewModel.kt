@@ -57,7 +57,7 @@ class MediaItemFragmentViewModel(
                 val subtitle = child.description.subtitle ?: ""
                 val duration = child.description.extras?.getLong(MediaMetadataCompat.METADATA_KEY_DURATION)
                         ?: 0
-                val location = child.description.extras?.getString(MediaMetadataCompat.METADATA_KEY_WRITER)
+                val location = child.description.description
 
                 MediaItemData(
                         child.mediaId!!,
