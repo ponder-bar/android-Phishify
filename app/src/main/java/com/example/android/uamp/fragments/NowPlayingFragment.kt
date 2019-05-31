@@ -28,6 +28,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.android.uamp.R
+import com.example.android.uamp.common.MediaSessionConnection
 import com.example.android.uamp.utils.InjectorUtils
 import com.example.android.uamp.viewmodels.MainActivityViewModel
 import com.example.android.uamp.viewmodels.NowPlayingFragmentViewModel
@@ -40,7 +41,8 @@ class NowPlayingFragment : Fragment() {
     private lateinit var mainActivityViewModel: MainActivityViewModel
     private lateinit var nowPlayingViewModel: NowPlayingFragmentViewModel
     private lateinit var positionTextView: TextView
-    private var seekBar: SeekBar? = null
+    private lateinit var mediaSessionConnection: MediaSessionConnection
+    private lateinit var seekBar: SeekBar
 
     companion object {
         fun newInstance() = NowPlayingFragment()
@@ -57,6 +59,13 @@ class NowPlayingFragment : Fragment() {
         // Always true, but lets lint know that as well.
         val context = activity ?: return
 
+
+        //initialize Seekbar
+        seekBar = view.findViewById(R.id.seekBar)
+
+
+        mediaSessionConnection = InjectorUtils.provideMediaSessionConnection(context)
+
         // Inject our activity and view models into this fragment
         mainActivityViewModel = ViewModelProviders
                 .of(context, InjectorUtils.provideMainActivityViewModel(context))
@@ -67,13 +76,17 @@ class NowPlayingFragment : Fragment() {
 
         // Attach observers to the LiveData coming from this ViewModel
         nowPlayingViewModel.mediaMetadata.observe(this,
-                Observer { mediaItem -> updateUI(view, mediaItem) })
+                Observer { mediaItem ->
+                    updateUI(view, mediaItem)
+                    seekBar.max = mediaItem.trueDuration.toInt()
+                })
         nowPlayingViewModel.mediaButtonRes.observe(this,
                 Observer { res -> view.findViewById<ImageView>(R.id.media_button).setImageResource(res) })
         nowPlayingViewModel.mediaPosition.observe(this,
                 Observer { pos ->
                     positionTextView.text =
                             NowPlayingMetadata.timestampToMSS(context, pos)
+                    seekBar.progress = pos.toInt()
                 })
 
         // Setup UI handlers for buttons
@@ -87,22 +100,20 @@ class NowPlayingFragment : Fragment() {
         positionTextView = view.findViewById<TextView>(R.id.position)
                 .apply { text = NowPlayingMetadata.timestampToMSS(context, 0L) }
 
-
-
-        seekBar = view.findViewById(R.id.seekBar)
-        seekBar?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+        seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            override fun onStartTrackingTouch(seekBar: SeekBar) {
             }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            override fun onStopTrackingTouch(seekBar: SeekBar) {
+                mediaSessionConnection.transportControls.seekTo(seekBar.progress.toLong())
             }
 
         })
+
     }
 
     /**
@@ -125,6 +136,7 @@ class NowPlayingFragment : Fragment() {
         view.findViewById<TextView>(R.id.location).text = metadata.location
         view.findViewById<TextView>(R.id.date).text = metadata.showdate
         view.findViewById<TextView>(R.id.venue).text = metadata.artist
+
 
     }
 }

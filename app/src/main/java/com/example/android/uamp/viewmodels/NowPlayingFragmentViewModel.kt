@@ -54,7 +54,8 @@ class NowPlayingFragmentViewModel(
             val showdate: String?,
             val artist: String?,
             val location: String?,
-            val duration: String
+            val duration: String,
+            val trueDuration: Long
     ) {
 
         companion object {
@@ -170,7 +171,9 @@ class NowPlayingFragmentViewModel(
                     mediaMetadata.displayDescription?.trim(),
                     mediaMetadata.artist?.trim(),
                     mediaMetadata.writer?.trim(),
-                    NowPlayingMetadata.timestampToMSS(app, mediaMetadata.duration)
+                    NowPlayingMetadata.timestampToMSS(app, mediaMetadata.duration),
+                    mediaMetadata.duration
+
             )
             this.mediaMetadata.postValue(nowPlayingMetadata)
         }
@@ -197,4 +200,4 @@ class NowPlayingFragmentViewModel(
 }
 
 private const val TAG = "NowPlayingFragmentVM"
-private const val POSITION_UPDATE_INTERVAL_MILLIS = 10L
+private const val POSITION_UPDATE_INTERVAL_MILLIS = 1000L
