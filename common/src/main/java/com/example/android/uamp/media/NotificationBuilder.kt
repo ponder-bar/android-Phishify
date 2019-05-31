@@ -99,7 +99,7 @@ class NotificationBuilder(private val context: Context) {
                 .setContentTitle(description.subtitle)
                 .setDeleteIntent(stopPendingIntent)
                 .setLargeIcon(description.iconBitmap)
-                .setOnlyAlertOnce(false)
+                .setOnlyAlertOnce(true)
                 .setSmallIcon(R.drawable.ic_notification)
                 .setStyle(mediaStyle)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

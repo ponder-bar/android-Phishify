@@ -87,7 +87,22 @@ class NowPlayingFragment : Fragment() {
         positionTextView = view.findViewById<TextView>(R.id.position)
                 .apply { text = NowPlayingMetadata.timestampToMSS(context, 0L) }
 
-        //seekBar?.setOnSeekBarChangeListener(ob)
+
+
+        seekBar = view.findViewById(R.id.seekBar)
+        seekBar?.setOnSeekBarChangeListener(object: SeekBar.OnSeekBarChangeListener{
+
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {
+            }
+
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+            }
+
+        })
     }
 
     /**
