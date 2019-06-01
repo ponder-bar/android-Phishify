@@ -43,6 +43,7 @@ class NowPlayingFragment : Fragment() {
     private lateinit var positionTextView: TextView
     private lateinit var mediaSessionConnection: MediaSessionConnection
     private lateinit var seekBar: SeekBar
+    private var holdingSeek: Boolean = false
 
     companion object {
         fun newInstance() = NowPlayingFragment()
@@ -86,7 +87,9 @@ class NowPlayingFragment : Fragment() {
                 Observer { pos ->
                     positionTextView.text =
                             NowPlayingMetadata.timestampToMSS(context, pos)
-                    seekBar.progress = pos.toInt()
+                    if (!holdingSeek) {
+                        seekBar.progress = pos.toInt()
+                    }
                 })
 
         // Setup UI handlers for buttons
@@ -103,12 +106,15 @@ class NowPlayingFragment : Fragment() {
         seekBar?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
 
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar) {
+                holdingSeek = true
             }
 
             override fun onStopTrackingTouch(seekBar: SeekBar) {
+                holdingSeek = false
                 mediaSessionConnection.transportControls.seekTo(seekBar.progress.toLong())
             }
 
