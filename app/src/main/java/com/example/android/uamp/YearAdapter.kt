@@ -22,7 +22,6 @@ class YearAdapter(private val yearFeed: YearFeed) : RecyclerView.Adapter<CustomV
     }
 
     override fun onBindViewHolder(holder: CustomViewHolder, position: Int) {
-        //val videoTitle = videoTitles.get(p1)
         val theYear = yearFeed.data[position]
         holder.view.title?.text = theYear.date
         holder.view.subtitle?.text = theYear.show_count
@@ -40,12 +39,13 @@ class CustomViewHolder(val view: View, var holderYear: PhishYears? = null) : Rec
 
     init {
         view.setOnClickListener {
-            val intent = Intent(view.context, MainActivity::class.java)
-            intent.putExtra(YEAR, holderYear?.date)
-            view.context.startActivity(intent)
+            val mainIntent = Intent(view.context, MainActivity::class.java)
+            view.context.startActivity(mainIntent)
+
             val serviceIntent = Intent(view.context, MusicService::class.java)
             serviceIntent.putExtra(YEAR, holderYear?.date)
-            serviceIntent.putExtra("notificationIntent", intent)
+            serviceIntent.putExtra("notificationIntent", mainIntent)
+
             view.context.startService(serviceIntent)
         }
     }

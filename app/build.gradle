@@ -68,5 +68,5 @@ dependencies {
     implementation 'com.squareup.okhttp3:okhttp:4.0.0-alpha01'
     implementation 'com.google.code.gson:gson:2.8.5'
 
-    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+    implementation 'com.google.android.material:material:1.1.0-alpha07'
 }

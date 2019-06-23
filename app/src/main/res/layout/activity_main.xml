@@ -14,10 +14,20 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<FrameLayout
+
+
+
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.android.uamp.MainActivity"
-    android:id="@+id/fragmentContainer" />
+    android:id="@+id/fragmentContainer" >
+
+
+    <include layout="@layout/fragment_nowplaying"/>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -22,13 +22,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.android.uamp.fragments.MediaItemFragment
+import com.example.android.uamp.fragments.NowPlayingFragment
 import com.example.android.uamp.media.MusicService
 import com.example.android.uamp.utils.Event
 import com.example.android.uamp.utils.InjectorUtils
 import com.example.android.uamp.viewmodels.MainActivityViewModel
+import com.example.android.uamp.viewmodels.NowPlayingFragmentViewModel
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainActivityViewModel
+    private lateinit var nowPlayingViewModel: NowPlayingFragmentViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +44,6 @@ class MainActivity : AppCompatActivity() {
         viewModel = ViewModelProviders
                 .of(this, InjectorUtils.provideMainActivityViewModel(this))
                 .get(MainActivityViewModel::class.java)
-
         /**
          * Observe [MainActivityViewModel.navigateToFragment] for [Event]s that request a
          * fragment swap.
@@ -77,7 +79,10 @@ class MainActivity : AppCompatActivity() {
                 navigateToMediaItem(mediaId)
             }
         })
+
+
     }
+
 
     private fun navigateToMediaItem(mediaId: String) {
         var fragment: MediaItemFragment? = getBrowseFragment(mediaId)
